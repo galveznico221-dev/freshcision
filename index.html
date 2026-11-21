@@ -19,7 +19,7 @@ svg{flex:none}
 .main{flex:1;overflow:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
 .btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border:0;border-radius:16px;font-weight:800;font-size:16px;padding:0 16px;width:100%;transition:transform .1s}
 .btn:active,.tile:active{transform:scale(.97)}
-.btn:disabled{cursor:not-allowed;opacity:.65;transform:none}
+.btn:disabled,.btn[aria-disabled="true"]{background:#D8E2DC;color:#355347;border:1px solid #6D877A;cursor:not-allowed;opacity:1;transform:none}
 .g{background:var(--g);color:#fff}.t{background:var(--t);color:#fff}
 .o{background:#fff;color:var(--d);border:2px solid var(--g)}
 .big{min-height:78px;font-size:20px;justify-content:flex-start;gap:16px}
@@ -44,6 +44,24 @@ select{width:100%;height:48px;border:2px solid var(--l);border-radius:14px;paddi
 .nav{flex:none;display:flex;background:#fff;border-top:1px solid #D5EBE2;padding:6px 6px 10px}
 .nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:12px;color:var(--m);padding:6px;border-radius:12px}
 .nav .on{color:var(--g);background:#E3F4EB}
+.helper-banner{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:#D6EEF1;color:#0B4F57;font-size:14px;font-weight:700}
+.helper-banner .btn{width:auto;min-height:44px;padding:0 12px;background:#fff;color:#0B4F57;border:2px solid #0B4F57;font-size:14px}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.field-label{font-size:14px;font-weight:800}
+.field-error{min-height:18px;font-size:13px;font-weight:700;color:#8E1B10}
+.helper-form input:not([type=checkbox]),.helper-form select{width:100%;height:48px;border:2px solid var(--l);border-radius:14px;padding:0 12px;font-size:15px;background:#fff;color:var(--d)}
+.helper-form input[type=checkbox]{width:22px;height:22px;accent-color:var(--g);flex:none}
+.helper-start-wrap{flex:1}.helper-start-wrap .btn{width:100%}.helper-start-wrap .btn:disabled{pointer-events:none}
+.disabled-accept-wrap{flex:1}.disabled-accept-wrap .btn{width:100%}.disabled-accept-wrap .btn:disabled{pointer-events:none}
+.helper-info{line-height:1.45}
+.helper-info strong{display:block;margin-bottom:4px}
+.disabled-reason{font-size:13px;font-weight:700;color:#355347}
+.sheet-backdrop,.confirm-backdrop{position:fixed;inset:0;z-index:10;display:flex;align-items:flex-end;justify-content:center;background:rgba(4,26,19,.62)}
+.accept-sheet{width:100%;max-width:420px;max-height:88vh;overflow:auto;padding:20px 18px 28px;background:var(--f);border-radius:24px 24px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.24)}
+.sheet-handle{width:44px;height:5px;border-radius:9px;background:#78958A;margin:0 auto 16px}
+.accept-sheet .btn{min-height:56px}
+.confirm-backdrop{z-index:11;align-items:center;padding:18px}
+.confirm-dialog{width:100%;max-width:380px;padding:20px;background:var(--f);border-radius:22px;box-shadow:0 16px 48px rgba(0,0,0,.28)}
 .step{flex:1;text-align:center;font-size:12px;font-weight:700}.step i{display:flex;width:34px;height:34px;border-radius:50%;margin:0 auto 6px;align-items:center;justify-content:center;font-style:normal;background:#fff;border:2px solid var(--l);color:var(--m)}
 .step.d i{background:var(--g);border-color:var(--g);color:#fff}.step.c i{background:var(--t);border-color:var(--t);color:#fff}
 .ok{background:#D9F2E3;color:#0D5A36}.wt{background:#FFF1CC;color:#6B4A00}.sea{background:#D6EEF1;color:#0B4F57}
@@ -55,7 +73,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const I={leaf:'<path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14z"/><path d="M5 19c3-5 6-8 9-10"/>',fish:'<path d="M3 12c3-5 9-6 13-3l5-3v12l-5-3c-4 3-10 2-13-3z"/><circle cx="8" cy="11" r=".8"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c3 0 4 2 4 5"/>',woff:'<path d="M2 2l20 20M5 12.5a10 10 0 0 1 4-2.4M2 8.8a15 15 0 0 1 5-3M16 11a10 10 0 0 1 3 1.5M12 19h.01"/>',wifi:'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19h.01"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',back:'<path d="M15 5l-7 7 7 7"/>',check:'<path d="M5 12l5 5L20 7"/>',truck:'<path d="M2 6h11v10H2zM13 9h5l4 4v3h-9"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',ice:'<path d="M12 2v20M4 7l16 10M20 7L4 17"/>',buyer:'<path d="M3 9l2-5h14l2 5M4 9v11h16V9M9 20v-6h6v6"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',minus:'<path d="M5 12h14"/>',plus:'<path d="M12 5v14M5 12h14"/>',spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',box:'<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>',home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',circ:'<circle cx="12" cy="12" r="7"/>',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',drop:'<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>'};
 const ic=n=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
-const S={scr:'home',hist:[],on:true,role:'',helper:false,helperName:'',helperPermission:false,req:{crop:'',qty:0,loc:'',needs:[],when:''},chat:[],draft:'',ask:'',saved:false,st:0,prov:[],tips:{},tr:'',shared:0,res:'',photo:''};
+const S={scr:'home',hist:[],on:true,role:'',helper:false,helperName:'',helperRelationship:'',beneficiaryName:'',helperPermission:false,helperDraft:{name:'',relationship:'',beneficiary:'',permission:false},helperAttempted:false,helperReturn:'home',endHelperConfirm:false,acceptProvider:null,req:{crop:'',qty:0,loc:'',needs:[],when:''},chat:[],draft:'',ask:'',saved:false,st:0,prov:[],tips:{},tr:'',shared:0,res:'',photo:''};
 const PL=['Daet','Mercedes','Labo','Paracale','Jose Panganiban','Vinzons','Talisay','Basud','San Vicente','Santa Elena','Capalonga'];
 const CR=[['tilapia','Tilapia'],['bangus','Bangus'],['tuna','Tuna'],['isda|fish|catch|huli','Fish'],['pineapple|pinya','Pineapple'],['kamatis|tomato','Tomato'],['saging|banana','Banana'],['palay|rice','Rice'],['gulay|vegetable','Vegetables']];
 const ND=[['yelo|ice|storage|cold|lamig','Ice'],['transport|truck|sasakyan|hatid|deliver','Transport'],['buyer|bumili|bibili|bilhin|bentahan|market|ibenta|sell','Buyer'],['proces','Processing']];
@@ -82,24 +100,45 @@ function mkProv(){const m={Buyer:['Buyer C','Buyer','buyer'],Transport:['Transpo
 function submit(){if(S.st>=2){toast('This request was already submitted. Start a new request to send another.');return}
  if(S.saved){toast('This request is already saved for this session.');return}
  if(nextQ()){toast('Please complete all details first.');return}
- if(!S.on){S.saved=true;toast('Saved for this session. It sends when you are online; closing this page will discard it.');R();return}
- S.saved=false;S.st=2;mkProv();toast('Request sent. Providers were notified.');nav('matches')}
+ if(!S.on){S.saved=true;toast('Saved on device. It sends when you are online.');R();return}
+ S.saved=false;S.st=2;mkProv();toast(S.helper?`Request sent for ${S.beneficiaryName}`:'Request sent. Providers were notified.');nav('matches')}
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.T);toast.T=setTimeout(()=>e.style.display='none',2400)}
 function nav(to){if(to!==S.scr){S.hist.push(S.scr);S.scr=to}R();const m=$('.main');m&&(m.scrollTop=S.scr==='chat'?m.scrollHeight:0)}
 const roleName=()=>(S.role==='fish'?'Fisherfolk':S.role==='farm'?'Farmer':'')+(S.helper?' · Helper':'');
 const net=()=>`<button class="chip" data-a="net" aria-label="Switch online or offline" style="background:#fff;color:${S.on?'#0D3B2C':'#6B4A00'}">${S.on?ic('wifi')+'Online':ic('woff')+'Offline'}</button>`;
 function photoBox(){return S.photo?`<div class="row" style="margin-top:10px;gap:12px"><img src="${S.photo}" alt="Photo of your product" style="width:64px;height:64px;object-fit:cover;border-radius:12px"><div style="flex:1" class="sm">Photo added for providers. It is not a freshness check.</div><button class="btn o sm2" style="width:auto" data-a="rmphoto">Remove</button></div>`:`<button class="btn o sm2" style="margin-top:10px" data-a="cam">${ic('cam')}Add a photo</button>`}
 const crops=()=>S.role==='farm'?['Pineapple','Tomato','Banana','Vegetables']:['Tilapia','Bangus','Tuna','Fish'];
-function home(){return `<div class="hero"><div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:2px">FRESHCISION</b>${net()}</div><h1>From farm to sea, help reaches you in time.</h1><p>Tell us what you harvested or caught. We find providers who can help.</p><svg class="w" viewBox="0 0 390 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25C60 0 120 50 195 25S330 0 390 25V50H0Z" fill="#EEF8F4"/></svg></div>
+function helperDraftValid(){const d=S.helperDraft;return !!(d.name.trim()&&d.relationship&&d.beneficiary.trim()&&d.permission)}
+function helperError(field){if(!S.helperAttempted)return '';const d=S.helperDraft;
+ if(field==='name'&&!d.name.trim())return 'Enter the helper’s full name.';
+ if(field==='relationship'&&!d.relationship)return 'Choose a relationship.';
+ if(field==='beneficiary'&&!d.beneficiary.trim())return 'Enter the beneficiary’s name.';
+ if(field==='permission'&&!d.permission)return 'Confirm that the member gave permission.';
+ return ''}
+function helperSetup(){const d=S.helperDraft,valid=helperDraftValid();
+ return `<div class="main helper-form"><div class="h" style="margin:0">Set up helper access</div><div class="sm">Enter your details and confirm the member’s permission.</div>
+<div class="form-field"><label class="field-label" for="helper-full-name">Helper full name</label><input id="helper-full-name" name="helperName" autocomplete="name" required value="${esc(d.name)}" aria-describedby="helper-full-name-error" aria-invalid="${!!helperError('name')}"><div class="field-error" id="helper-full-name-error" aria-live="polite">${helperError('name')}</div></div>
+<div class="form-field"><label class="field-label" for="helper-relationship">Relationship to the beneficiary</label><select id="helper-relationship" name="helperRelationship" required aria-describedby="helper-relationship-error" aria-invalid="${!!helperError('relationship')}"><option value="">Choose one</option>${['Relative','Friend','Cooperative representative','Community coordinator'].map(x=>`<option value="${x}"${d.relationship===x?' selected':''}>${x}</option>`).join('')}</select><div class="field-error" id="helper-relationship-error" aria-live="polite">${helperError('relationship')}</div></div>
+<div class="form-field"><label class="field-label" for="beneficiary-name">Farmer or fisherfolk member’s full name</label><input id="beneficiary-name" name="beneficiaryName" autocomplete="off" required value="${esc(d.beneficiary)}" aria-describedby="beneficiary-name-error" aria-invalid="${!!helperError('beneficiary')}"><div class="field-error" id="beneficiary-name-error" aria-live="polite">${helperError('beneficiary')}</div></div>
+<div class="card helper-info"><strong>What helpers can and cannot do</strong><div><b>Can:</b> describe the need, add a photo, submit and track a request, send reminders, and ask providers questions.</div><div style="margin-top:8px"><b>Cannot:</b> accept an offer, agree on a price, or change commercial terms. The member makes every final decision.</div></div>
+<div class="form-field"><label class="row"><input id="helper-permission" type="checkbox" required${d.permission?' checked':''} aria-describedby="helper-permission-error" aria-invalid="${!!helperError('permission')}"><span>The farmer or fisherfolk member allows me to prepare, send, and track this request for them.</span></label><div class="field-error" id="helper-permission-error" aria-live="polite">${helperError('permission')}</div></div>
+<div class="rw"><div class="helper-start-wrap" data-a="helperInvalidAttempt"><button id="start-helper" class="btn g" data-a="startHelper" type="button"${valid?'':' disabled'} aria-disabled="${valid?'false':'true'}" aria-describedby="helper-start-help">Start as helper</button></div><button class="btn o" data-a="cancelHelper" type="button">Cancel</button></div><div class="sm" id="helper-start-help">${valid?'Your details and permission are ready.': 'Complete all required fields and confirm permission to continue.'}</div></div>`}
+function helperBanner(){return S.helper?`<div class="helper-banner" role="status"><span>Helping ${esc(S.beneficiaryName)} · ${esc(S.helperName)}</span><button class="btn" data-a="endHelper">End helper mode</button></div>`:''}
+function acceptSheet(){const p=S.prov[S.acceptProvider];if(!S.helper||!p||p.s!=='ok'||p.stale)return '';
+ return `<div class="sheet-backdrop" id="accept-backdrop"><section class="accept-sheet" role="dialog" aria-modal="true" aria-labelledby="accept-sheet-title"><div class="sheet-handle" aria-hidden="true"></div><div class="h" id="accept-sheet-title">Provider offer</div><div class="card"><div class="h">${esc(p.n)}</div><div class="row"><b>Indicative rate:</b>&nbsp;[Indicative rate]</div><div class="row" style="margin-top:8px"><b>Ready time:</b>&nbsp;[time]</div></div><p class="sm">Show this to ${esc(S.beneficiaryName)}. They decide.</p><div class="card"><div class="h">Beneficiary confirms</div><div class="sm" style="margin-bottom:10px">Hand the device to ${esc(S.beneficiaryName)}. Only they should choose.</div><button id="beneficiary-accept" class="btn g" style="min-height:64px;font-size:19px" data-a="beneficiaryAccept" data-v="${S.acceptProvider}">I accept</button><button class="btn o" style="margin-top:8px" data-a="closeAccept">Not now</button></div></section></div>`}
+function endHelperDialog(){return S.endHelperConfirm?`<div class="confirm-backdrop"><section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="end-helper-title"><div class="h" id="end-helper-title">End helper mode?</div><p class="sm">You will leave helper mode for ${esc(S.beneficiaryName)}. Their request will remain unchanged.</p><div class="rw"><button class="btn o" data-a="cancelEndHelper">Keep helping</button><button class="btn t" data-a="confirmEndHelper">End helper mode</button></div></section></div>`:''}
+function home(){return `<div class="hero"><div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:2px">FRESHCISION</b>${net()}</div><h1>From farm to sea, help reaches you in time.</h1><p>Tell us what you harvested or caught. We find providers who can help.</p><svg class="w" viewBox="0 0 390 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25C60 0 120 50 195 25S330 0 390 25V50H0Z" fill="#EEF8F4"/></svg></div>${S.helper?helperBanner():''}
 <div class="main"><div class="h" style="font-size:18px;margin:0">I am a…</div>
 <button class="btn g big" data-a="role" data-v="farm">${ic('leaf')}Farmer</button>
 <button class="btn t big" data-a="role" data-v="fish">${ic('fish')}Fisherfolk</button>
-<button class="btn ${S.helper?'g':'o'}" data-a="helper">${ic('people')}${S.helper?'Helper mode is on':'Someone is helping me'}</button>
-${S.helper?`<div class="card"><div class="h">Helper access</div><div class="sm">You are a separate helper. You may prepare, submit, and track a request with the beneficiary’s permission. Only the beneficiary can accept a provider offer.</div><input id="helper-name" aria-label="Your name as helper" placeholder="Your name (helper)" value="${esc(S.helperName)}" style="width:100%;height:46px;border:2px solid var(--l);border-radius:14px;padding:0 12px;margin-top:10px;font-size:15px"><label class="row" style="margin-top:10px"><input id="helper-permission" type="checkbox"${S.helperPermission?' checked':''}> I have the beneficiary’s permission</label></div>`:''}
+${S.helper?'':`<button class="btn o" data-a="helperSetup">${ic('people')}Someone is helping me</button>`}
 <button class="btn o" data-a="go" data-v="guided" style="border-color:var(--t)">${ic('woff')}Offline guided mode</button>
 ${S.st>=2?`<button class="btn o" data-a="go" data-v="matches">${ic('truck')}View my request</button>`:''}
 <div class="sm" style="text-align:center">You decide every step. Providers confirm before anything is final.</div></div>`}
-function summary(){const r=S.req;return `<div class="card"><div class="h">Please check your request</div><div class="kv">${[['Role',roleName()],['Product',r.crop],['Quantity',r.qty+' kg'],['Location',r.loc],['Needs',r.needs.join(', ')],['When',r.when]].map(([a,b])=>`<span>${a}</span><b>${esc(b)}</b>`).join('')}</div>${photoBox()}${S.saved?'<div style="margin-top:10px"><span class="chip wt">Saved for this session · not sent yet</span><div class="sm" style="margin-top:6px">Closing this page will discard this unsent request.</div></div>':''}<div class="rw" style="margin-top:12px"><button class="btn o" data-a="edit" style="font-size:15px">Edit</button><button class="btn g" data-a="submit" style="font-size:15px"${S.saved?' disabled':''}>${S.saved?'Saved for this session':S.on?'Confirm &amp; submit':'Save for this session'}</button></div></div>`}
+function summary(){const r=S.req,rows=[['Role',roleName()]];
+ if(S.helper)rows.push(['Requested by',`${S.helperName} (${S.helperRelationship})`],['On behalf of',S.beneficiaryName]);
+ rows.push(['Product',r.crop],['Quantity',r.qty+' kg'],['Location',r.loc],['Needs',r.needs.join(', ')],['When',r.when]);
+ return `<div class="card"><div class="h">Please check your request</div><div class="kv">${rows.map(([a,b])=>`<span>${esc(a)}</span><b>${esc(b)}</b>`).join('')}</div>${photoBox()}${S.saved?'<div style="margin-top:10px"><span class="chip wt">Saved on device · not sent yet</span><div class="sm" id="summary-submit-reason" style="margin-top:6px">It sends when you switch back online.</div></div>':''}<div class="rw" style="margin-top:12px"><button class="btn o" data-a="edit" style="font-size:15px">Edit</button><button class="btn g" data-a="submit" style="font-size:15px"${S.saved?' disabled aria-disabled="true" aria-describedby="summary-submit-reason"':''}>${S.saved?'Saved on device':S.on?'Confirm &amp; submit':'Save on device'}</button></div></div>`}
 function chat(){if(!S.chat.length)S.chat.push({t:`Kumusta! Tell me what happened with your ${S.role==='fish'?'catch':'harvest'}. You can type or speak.`});
  return `<div class="main">${S.chat.map(m=>`<div class="bb${m.u?' u':''}">${esc(m.t)}</div>`).join('')}${S.chat.some(m=>m.u)&&!nextQ()&&S.st<2?summary():''}</div>
 <div class="bar"><button class="ib t" data-a="mic" aria-label="Speak">${ic('mic')}</button><button class="ib" data-a="cam" aria-label="Add a photo" style="background:#fff;border:2px solid var(--g);color:var(--g)">${ic('cam')}</button><input id="in" aria-label="Type your message" placeholder="Type or speak in Filipino or English" value="${esc(S.draft)}"><button class="ib g" data-a="send" aria-label="Send">${ic('send')}</button></div>
@@ -110,16 +149,18 @@ function guided(){const r=S.req,T=[['Buyer','Find a buyer','buyer'],['Transport'
 <div class="h" style="margin:0">How much?</div><div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px"><button class="ib" data-a="qty" data-v="-5" aria-label="Less" style="background:#fff;border:2px solid var(--g);color:var(--g)">${ic('minus')}</button><b style="font-size:26px">${r.qty} kg</b><button class="ib g" data-a="qty" data-v="5" aria-label="More">${ic('plus')}</button></div>
 <div class="h" style="margin:0">Where are you?</div><select id="loc" aria-label="Location"><option value="">Choose location</option>${PL.map(p=>`<option${r.loc===p?' selected':''}>${p}</option>`).join('')}</select>
 <div class="h" style="margin:0">When?</div><div class="rw">${[['Today','Today'],['Tomorrow','Tomorrow'],['Later this week','Later']].map(([v,l])=>`<button class="btn ${r.when===v?'g':'o'} sm2" data-a="when" data-v="${v}">${l}</button>`).join('')}</div>
-${photoBox()}<button class="btn g" data-a="submit"${S.saved||S.st>=2?' disabled':''}>${ic('check')}${S.saved?'Saved for this session':S.st>=2?'Already submitted':S.on?'Submit request':'Save for this session'}</button>
-${S.saved?'<div style="text-align:center"><span class="chip wt">Saved for this session · not sent yet</span><div class="sm" style="margin-top:6px">It sends when you switch back online. Closing this page will discard it.</div></div>':''}
+${photoBox()}<button class="btn g" data-a="submit"${S.saved||S.st>=2?' disabled aria-disabled="true" aria-describedby="guided-submit-reason"':''}>${ic('check')}${S.saved?'Saved on device':S.st>=2?'Already submitted':S.on?'Submit request':'Save on device'}</button>
+${S.saved?'<div style="text-align:center"><span class="chip wt">Saved on device · not sent yet</span><div class="disabled-reason" id="guided-submit-reason">Already saved; it will send when you reconnect.</div></div>':S.st>=2?'<div class="disabled-reason" id="guided-submit-reason">This request is already submitted. Start a new request to send another.</div>':''}
 <button class="btn o sm2" data-a="go" data-v="chat">Use the assistant instead</button></div>`}
 function matches(){if(S.st<2)return `<div class="main"><div class="card" style="text-align:center"><div class="h">No request yet</div><div class="sm" style="margin-bottom:12px">Start a request and your provider matches will show here.</div><button class="btn g" data-a="req">Start a request</button></div></div>`;
  const r=S.req,ch={ok:'<span class="chip ok">✓ Confirmed available</span>',wait:'<span class="chip wt">Awaiting reply</span>',acc:'<span class="chip sea">✓ You accepted</span>'};
+ const status=p=>p.stale?'<span class="chip wt">Needs fresh confirmation</span>':p.s==='acc'&&p.acceptedBy?`<span class="chip sea">✓ Accepted by ${esc(p.acceptedBy)} with ${esc(p.acceptedWith)}'s help</span>`:ch[p.s];
  const any=S.prov.some(p=>p.s==='acc');
- return `<div class="main">${S.helper?`<div class="card"><div class="h">Helper view · ${esc(S.helperName)}</div><div class="sm">You can monitor this request and ask questions. The beneficiary must accept provider offers.</div></div>`:''}<div class="sm">${r.qty} kg ${esc(r.crop)} · ${esc(r.loc)}. Matches are suggestions. A provider is available only after they confirm.</div>
-${S.prov.map((p,i)=>`<div class="card"><div class="row"><div class="ib ok" style="width:44px;height:44px">${ic(p.i)}</div><div style="flex:1"><div class="h" style="margin:0">${p.n}</div><div class="sm">${p.k}</div></div>${p.stale?'<span class="chip wt">Needs fresh confirmation</span>':ch[p.s]}</div>${p.stale?'<div class="sm" style="margin:10px 0">Last synced 20 minutes ago. Previous availability and indicative details are hidden until re-confirmed.</div>':'<div style="font-size:14px;margin:10px 0">[Indicative rate] · Ready by [time]</div>'}
+ return `<div class="main">${S.helper?`<div class="card"><div class="h">Helper view · ${esc(S.helperName)}</div><div class="sm">You can monitor this request and ask questions. ${esc(S.beneficiaryName)} must accept provider offers.</div></div>`:''}<div class="sm">${r.qty} kg ${esc(r.crop)} · ${esc(r.loc)}. Matches are suggestions. A provider is available only after they confirm.</div>
+${S.prov.map((p,i)=>`<div class="card"><div class="row"><div class="ib ok" style="width:44px;height:44px">${ic(p.i)}</div><div style="flex:1"><div class="h" style="margin:0">${esc(p.n)}</div><div class="sm">${esc(p.k)}</div></div>${status(p)}</div>${p.stale?'<div class="sm" style="margin:10px 0">Last synced 20 minutes ago. Previous availability and indicative details are hidden until re-confirmed.</div>':'<div style="font-size:14px;margin:10px 0">[Indicative rate] · Ready by [time]</div>'}
 ${p.stale?`<button class="btn t sm2" data-a="refresh" data-v="${i}">Request fresh confirmation</button>`:''}
-${p.s==='ok'&&!p.stale?`<div class="rw"><button class="btn g sm2" data-a="accept" data-v="${i}"${S.helper?' disabled':''}>Accept</button><button class="btn o sm2" data-a="ask" data-v="${i}">Ask a question</button></div>${S.helper?'<div class="sm">Only the beneficiary can accept this offer.</div>':''}<button class="btn o sm2" style="margin-top:8px" data-a="stale" data-v="${i}">Demo: age availability data</button>`:''}
+${p.s==='ok'&&!p.stale?S.helper?`<div class="rw"><div class="disabled-accept-wrap" data-a="accept" data-v="${i}" role="group" aria-label="Accept offer"><button class="btn g sm2" disabled aria-disabled="true" aria-describedby="accept-reason-${i}">Accept</button></div><span class="disabled-reason" id="accept-reason-${i}">Only ${esc(S.beneficiaryName)} can accept offers.</span></div><button class="btn t sm2" style="margin-top:8px" data-a="askAccept" data-v="${i}">Ask ${esc(S.beneficiaryName)} to accept</button><button class="btn o sm2" style="margin-top:8px" data-a="ask" data-v="${i}">Ask a question</button>`:`<div class="rw"><button class="btn g sm2" data-a="accept" data-v="${i}">Accept</button><button class="btn o sm2" data-a="ask" data-v="${i}">Ask a question</button></div>`:''}
+${p.s==='ok'&&!p.stale?`<button class="btn o sm2" style="margin-top:8px" data-a="stale" data-v="${i}">Demo: age availability data</button>`:''}
 ${p.s==='wait'&&!p.stale?`<div class="rw"><button class="btn o sm2" data-a="remind" data-v="${i}">Send reminder</button><button class="btn t sm2" data-a="sim" data-v="${i}">Demo: provider replies</button></div>`:''}</div>`).join('')}
 <div class="card"><div class="h">Progress</div><div class="rw">${[['Submitted',1],['Matched',1],['Confirmed',any],['Completed',S.st===4]].map(([l,d],i)=>`<div class="step ${d?'d':(i===2&&!any||i===3&&S.st!==4)&&(i===2||any)?'c':''}"><i>${d?ic('check'):i+1}</i>${l}</div>`).join('')}</div></div>
 <button class="btn o" data-a="go" data-v="ai">${ic('spark')}Why these matches? (AI)</button>
@@ -137,26 +178,43 @@ ${L.map(([i,a,b],j)=>`<div class="card row" style="padding:12px 14px;gap:12px"><
 <button class="btn g" data-a="req">${ic('truck')}Need ice or transport now?</button><div class="sm" style="text-align:center">General reminders only. Not food-safety advice or a freshness check.</div></div>`}
 function outcome(){if(S.st===4)return `<div class="main"><div class="card" style="text-align:center"><div class="h">Outcome saved</div><div class="sm" style="margin-bottom:12px">Result: ${esc(S.res)}. Thank you. This helps the community learn where help is needed.</div><button class="btn g" data-a="newreq">Start a new request</button></div></div>`;
  return `<div class="main"><div class="h" style="margin:0">What happened?</div>${['Completed','Partly completed','Not completed'].map(v=>`<button class="btn ${S.res===v?'g':'o'}" data-a="res" data-v="${v}" aria-pressed="${S.res===v}">${v}</button>`).join('')}<div class="h" style="margin:0">Kilos sold or saved</div><input id="kg" type="number" min="0" inputmode="numeric" aria-label="Kilos sold or saved" style="height:48px;border:2px solid var(--l);border-radius:14px;padding:0 14px;font-size:16px" placeholder="0"><button class="btn t" data-a="saveout">${ic('check')}Save outcome</button></div>`}
-function R(){const s=S.scr,F={home,chat,guided,matches,ai,tips,outcome}[s];
- const T={chat:['Adaptive Assist',roleName()],guided:['Guided request','No internet needed'],matches:['Your matches','Providers who can help'],ai:['AI Coordination Engine','How your request was handled'],tips:['Protect your goods','While you wait for providers'],outcome:['Record outcome','Tell us how it went']}[s];
+function R(){const s=S.scr,F={home,helperSetup,chat,guided,matches,ai,tips,outcome}[s];
+ const T={helperSetup:['Helper setup','Assisted access'],chat:['Adaptive Assist',roleName()],guided:['Guided request','No internet needed'],matches:['Your matches','Providers who can help'],ai:['AI Coordination Engine','How your request was handled'],tips:['Protect your goods','While you wait for providers'],outcome:['Record outcome','Tell us how it went']}[s];
  const N=[['home','Home','home',s==='home'],['req','Request','spark',s==='chat'||s==='guided'],['matches','Matches','truck',['matches','ai','outcome'].includes(s)],['tips','Tips','leaf',s==='tips']];
- $('#app').innerHTML=(s==='home'?'':`<div class="top"><button class="ib" data-a="back" aria-label="Back" style="background:rgba(255,255,255,.18);color:#fff">${ic('back')}</button><div style="flex:1"><b>${T[0]}</b><small>${T[1]}</small></div>${net()}</div>`)+F()+`<nav class="nav" aria-label="Main">${N.map(([a,l,i,o])=>`<button data-a="${a==='req'?'req':'go'}" data-v="${a}"${o?' class="on" aria-current="page"':''}>${ic(i)}${l}</button>`).join('')}</nav>`;
+ const top=s==='home'?'':`<div class="top"><button class="ib" data-a="back" aria-label="Back" style="background:rgba(255,255,255,.18);color:#fff">${ic('back')}</button><div style="flex:1"><b>${T[0]}</b><small>${T[1]}</small></div>${net()}</div>`;
+ const banner=s==='home'?'':helperBanner();
+ const nav=s==='helperSetup'?'':`<nav class="nav" aria-label="Main">${N.map(([a,l,i,o])=>`<button data-a="${a==='req'?'req':'go'}" data-v="${a}"${o?' class="on" aria-current="page"':''}>${ic(i)}${l}</button>`).join('')}</nav>`;
+ $('#app').innerHTML=top+banner+F()+nav+endHelperDialog()+acceptSheet();
  const m=$('.main');if(m&&s==='chat')m.scrollTop=m.scrollHeight}
 function mic(){const C=window.SpeechRecognition||window.webkitSpeechRecognition;if(!C){toast('Voice is not supported in this browser. Please type.');return}
  const r=new C();r.lang='fil-PH';r.onresult=e=>send(e.results[0][0].transcript);r.onerror=()=>toast('Could not hear you. Try again.');r.start();toast('Listening…')}
+function updateHelperSetupState(){if(S.scr!=='helperSetup')return;const valid=helperDraftValid(),button=$('#start-helper'),help=$('#helper-start-help');
+ if(button){button.disabled=!valid;button.setAttribute('aria-disabled',String(!valid))}
+ if(help)help.textContent=valid?'Your details and permission are ready.':'Complete all required fields and confirm permission to continue.';
+ if(S.helperAttempted){[['name','helper-full-name'],['relationship','helper-relationship'],['beneficiary','beneficiary-name'],['permission','helper-permission']].forEach(([field,id])=>{const input=$('#'+id),error=$('#'+id+'-error');if(input)input.setAttribute('aria-invalid',String(!!helperError(field)));if(error)error.textContent=helperError(field)})}}
 function act(a,v){const r=S.req;({
  cam(){$('#cam').click()},rmphoto(){S.photo='';R()},
- role(){if(S.helper&&(!S.helperName.trim()||!S.helperPermission)){toast('Enter your name and confirm the beneficiary’s permission to continue.');return}S.role=v;S.chat=[];nav(S.on?'chat':'guided')},
- helper(){S.helper=!S.helper;if(!S.helper){S.helperName='';S.helperPermission=false}toast(S.helper?'Helper mode on. Enter your name and confirm permission to continue.':'Helper mode off.');R()},
+ role(){S.role=v;S.chat=[];nav(S.on?'chat':'guided')},
+ helperInvalidAttempt(){if(S.scr==='helperSetup'&&!helperDraftValid()){S.helperAttempted=true;R();const id=!S.helperDraft.name.trim()?'helper-full-name':!S.helperDraft.relationship?'helper-relationship':!S.helperDraft.beneficiary.trim()?'beneficiary-name':'helper-permission';$('#'+id).focus()}},
+ helperSetup(){if(S.helper)return;S.helperReturn=S.scr;S.helperDraft={name:'',relationship:'',beneficiary:'',permission:false};S.helperAttempted=false;S.scr='helperSetup';R();$('#helper-full-name').focus()},
+ startHelper(){if(!helperDraftValid()){S.helperAttempted=true;R();const id=!S.helperDraft.name.trim()?'helper-full-name':!S.helperDraft.relationship?'helper-relationship':!S.helperDraft.beneficiary.trim()?'beneficiary-name':'helper-permission';$('#'+id).focus();return}
+ S.helper=true;S.helperName=S.helperDraft.name.trim();S.helperRelationship=S.helperDraft.relationship;S.beneficiaryName=S.helperDraft.beneficiary.trim();S.helperPermission=true;S.helperDraft={name:'',relationship:'',beneficiary:'',permission:false};S.helperAttempted=false;S.endHelperConfirm=false;S.scr=S.helperReturn||'home';S.helperReturn='home';toast(`Helper mode started for ${S.beneficiaryName}`);R()},
+ cancelHelper(){S.helperDraft={name:'',relationship:'',beneficiary:'',permission:false};S.helperAttempted=false;S.scr=S.helperReturn||'home';S.helperReturn='home';R()},
+ endHelper(){S.endHelperConfirm=true;R();$('.confirm-dialog button')?.focus()},
+ cancelEndHelper(){S.endHelperConfirm=false;R()},
+ confirmEndHelper(){S.helper=false;S.helperName='';S.helperRelationship='';S.beneficiaryName='';S.helperPermission=false;S.endHelperConfirm=false;S.acceptProvider=null;toast('Helper mode ended.');R()},
+ askAccept(){const p=S.prov[v];if(!S.helper||!p||p.s!=='ok'||p.stale)return;S.acceptProvider=Number(v);R();$('#beneficiary-accept')?.focus()},
+ beneficiaryAccept(){const p=S.prov[v];if(!S.helper||!p||S.acceptProvider===null||p.s!=='ok'||p.stale)return; p.s='acc';p.acceptedBy=S.beneficiaryName;p.acceptedWith=S.helperName;S.acceptProvider=null;toast(`Accepted by ${S.beneficiaryName} with ${S.helperName}'s help`);R()},
+ closeAccept(){S.acceptProvider=null;R()},
  go(){nav(v==='home'&&S.scr==='home'?'home':v)},
  req(){if(!S.role){toast('Choose Farmer or Fisherfolk first.');nav('home')}else nav(S.on?'chat':'guided')},
- back(){S.scr=S.hist.pop()||'home';R()},
- net(){S.on=!S.on;if(S.on&&S.saved){S.saved=false;S.st=2;mkProv();toast('Back online. Your request was sent.')}else toast(S.on?'Back online.':'Offline mode. Unsent requests stay in this session; closing this page discards them.');R()},
+ back(){if(S.scr==='helperSetup'){act('cancelHelper');return}S.scr=S.hist.pop()||'home';R()},
+ net(){S.on=!S.on;if(S.on&&S.saved){S.saved=false;S.st=2;mkProv();toast(S.helper?`Request sent for ${S.beneficiaryName}`:'Back online. Your request was sent.')}else toast(S.on?'Back online.':'Offline mode. Requests are saved on your device.');R()},
  send(){send($('#in').value)},mic,submit,
  edit(){S.req={crop:'',qty:0,loc:'',needs:[],when:''};S.ask='';S.saved=false;S.chat.push({t:'Okay. Tell me the correct details.'});R()},
  crop(){r.crop=v;R()},need(){const i=r.needs.indexOf(v);i<0?r.needs.push(v):r.needs.splice(i,1);R()},
  qty(){r.qty=Math.max(0,r.qty+ +v);R()},when(){r.when=v;R()},
- accept(){if(S.helper){toast('Only the beneficiary can accept a provider offer.');return}if(!S.prov[v]||S.prov[v].stale){toast('Availability needs fresh confirmation first.');return}S.prov[v].s='acc';toast('Accepted. The provider was told.');R()},
+ accept(){if(S.helper){toast(`Only ${S.beneficiaryName} can accept offers`);return}if(!S.prov[v]||S.prov[v].stale){toast('Availability needs fresh confirmation first.');return}S.prov[v].s='acc';toast('Accepted. The provider was told.');R()},
  ask(){toast('Your question was sent to the provider.')},remind(){toast('Reminder sent.')},
  stale(){if(S.prov[v]){S.prov[v].stale=true;toast('Demo: provider availability is now out of date.');R()}},
  refresh(){if(S.prov[v]){S.prov[v].stale=false;S.prov[v].s='wait';toast('Fresh confirmation requested (demo). Availability remains unconfirmed.');R()}},
@@ -165,11 +223,18 @@ function act(a,v){const r=S.req;({
  tip(){S.tips[v]=!S.tips[v];R()},tr(){S.tr=v;R()},
  res(){S.res=v;R()},
  saveout(){if(!S.res){toast('Choose what happened first.');return}S.st=4;toast('Outcome saved.');R()},
- newreq(){S.req={crop:'',qty:0,loc:'',needs:[],when:''};S.chat=[];S.prov=[];S.st=0;S.res='';S.ask='';S.saved=false;S.shared=0;S.photo='';S.hist=[];S.scr='home';R()}
+ newreq(){S.req={crop:'',qty:0,loc:'',needs:[],when:''};S.chat=[];S.prov=[];S.st=0;S.res='';S.ask='';S.saved=false;S.shared=0;S.photo='';S.acceptProvider=null;S.hist=[];S.scr='home';R()}
 })[a]()}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
-document.addEventListener('input',e=>{if(e.target.id==='in')S.draft=e.target.value;if(e.target.id==='helper-name')S.helperName=e.target.value});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='in')act('send')});
-document.addEventListener('change',e=>{if(e.target.id==='loc'){S.req.loc=e.target.value}if(e.target.id==='helper-permission')S.helperPermission=e.target.checked;if(e.target.id==='cam'&&e.target.files[0]){S.photo=URL.createObjectURL(e.target.files[0]);e.target.value='';toast('Photo added to your request.');R()}});
+document.addEventListener('click',e=>{if(e.target.id==='accept-backdrop'){act('closeAccept');return}const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
+document.addEventListener('input',e=>{if(e.target.id==='in')S.draft=e.target.value;
+ if(e.target.id==='helper-full-name'){S.helperDraft.name=e.target.value;updateHelperSetupState()}
+ if(e.target.id==='beneficiary-name'){S.helperDraft.beneficiary=e.target.value;updateHelperSetupState()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.endHelperConfirm)act('cancelEndHelper');else if(S.acceptProvider!==null)act('closeAccept');else if(S.scr==='helperSetup')act('cancelHelper')}
+ if(e.key==='Enter'&&e.target.id==='in')act('send');
+ if(e.key==='Enter'&&S.scr==='helperSetup'&&['helper-full-name','helper-relationship','beneficiary-name','helper-permission'].includes(e.target.id)){e.preventDefault();act('startHelper')}});
+document.addEventListener('change',e=>{if(e.target.id==='loc'){S.req.loc=e.target.value}
+ if(e.target.id==='helper-relationship'){S.helperDraft.relationship=e.target.value;updateHelperSetupState()}
+ if(e.target.id==='helper-permission'){S.helperDraft.permission=e.target.checked;updateHelperSetupState()}
+ if(e.target.id==='cam'&&e.target.files[0]){S.photo=URL.createObjectURL(e.target.files[0]);e.target.value='';toast('Photo added to your request.');R()}});
 R();
 </script></body></html>
