@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRESHCISION Adaptive Assist – Prototype</title>
+<style>
+:root{--d:#0D3B2C;--g:#17794A;--t:#0B6E78;--f:#EEF8F4;--m:#3F5F55;--l:#BFE3D6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0D3B2C,#0B6E78);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--d)}
+#app{width:100%;max-width:420px;height:100vh;max-height:860px;background:var(--f);position:relative;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:500px){#app{border-radius:32px;box-shadow:0 20px 60px rgba(0,0,0,.45)}}
+button,input,select{font-family:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #5FD0C7;outline-offset:2px}
+svg{flex:none}
+.top{flex:none;padding:40px 18px 18px;background:linear-gradient(160deg,#0D3B2C,#17794A 60%,#0B6E78);color:#fff;display:flex;align-items:center;gap:12px;border-radius:0 0 26px 26px}
+.top b{font-size:18px;display:block}.top small{font-size:13px;color:#D6F3EA}
+.hero{flex:none;position:relative;padding:44px 24px 62px;background:linear-gradient(160deg,#0D3B2C,#17794A 55%,#0B6E78);color:#fff}
+.hero h1{margin:24px 0 8px;font-size:28px;line-height:1.15}.hero p{margin:0;font-size:15px;color:#D6F3EA;line-height:1.4}
+.hero svg.w{position:absolute;left:0;bottom:-1px;width:100%;height:50px}
+.main{flex:1;overflow:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border:0;border-radius:16px;font-weight:800;font-size:16px;padding:0 16px;width:100%;transition:transform .1s}
+.btn:active,.tile:active{transform:scale(.97)}
+.g{background:var(--g);color:#fff}.t{background:var(--t);color:#fff}
+.o{background:#fff;color:var(--d);border:2px solid var(--g)}
+.big{min-height:78px;font-size:20px;justify-content:flex-start;gap:16px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-size:13px;font-weight:700;border:0}
+.chip svg{width:16px;height:16px}
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 6px 18px rgba(13,59,44,.1)}
+.ib{width:48px;height:48px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;flex:none}
+.h{font-weight:800;font-size:17px;margin-bottom:8px}
+.sm{font-size:13px;color:var(--m);line-height:1.4}
+.bb{max-width:84%;padding:12px 16px;font-size:15px;line-height:1.4;border-radius:18px 18px 18px 4px;background:#fff;align-self:flex-start}
+.bb.u{align-self:flex-end;background:var(--g);color:#fff;border-radius:18px 18px 4px 18px}
+.kv{display:grid;grid-template-columns:90px 1fr;gap:6px 8px;font-size:14px}.kv span{color:var(--m)}
+.bar{flex:none;display:flex;gap:8px;padding:10px 14px;background:#fff;align-items:center}
+.bar input{flex:1;min-width:0;height:48px;border:2px solid var(--l);border-radius:24px;padding:0 16px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{height:92px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:15px;font-weight:800;border:2px solid var(--l);background:#fff;color:var(--d)}
+.sel{background:var(--g);color:#fff;border-color:var(--g)}
+.row{display:flex;align-items:center;gap:10px;font-size:14px}
+.rw{display:flex;gap:10px}
+.sm2{min-height:44px;font-size:14px}
+select{width:100%;height:48px;border:2px solid var(--l);border-radius:14px;padding:0 12px;font-size:15px;background:#fff;color:var(--d)}
+.nav{flex:none;display:flex;background:#fff;border-top:1px solid #D5EBE2;padding:6px 6px 10px}
+.nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:12px;color:var(--m);padding:6px;border-radius:12px}
+.nav .on{color:var(--g);background:#E3F4EB}
+.step{flex:1;text-align:center;font-size:12px;font-weight:700}.step i{display:flex;width:34px;height:34px;border-radius:50%;margin:0 auto 6px;align-items:center;justify-content:center;font-style:normal;background:#fff;border:2px solid var(--l);color:var(--m)}
+.step.d i{background:var(--g);border-color:var(--g);color:#fff}.step.c i{background:var(--t);border-color:var(--t);color:#fff}
+.ok{background:#D9F2E3;color:#0D5A36}.wt{background:#FFF1CC;color:#6B4A00}.sea{background:#D6EEF1;color:#0B4F57}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--d);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;max-width:340px;text-align:center;display:none;z-index:9}
+</style></head><body>
+<div id="app"></div><input type="file" id="cam" accept="image/*" capture="environment" hidden aria-label="Take or choose a photo"><div id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const I={leaf:'<path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14z"/><path d="M5 19c3-5 6-8 9-10"/>',fish:'<path d="M3 12c3-5 9-6 13-3l5-3v12l-5-3c-4 3-10 2-13-3z"/><circle cx="8" cy="11" r=".8"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c3 0 4 2 4 5"/>',woff:'<path d="M2 2l20 20M5 12.5a10 10 0 0 1 4-2.4M2 8.8a15 15 0 0 1 5-3M16 11a10 10 0 0 1 3 1.5M12 19h.01"/>',wifi:'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19h.01"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',back:'<path d="M15 5l-7 7 7 7"/>',check:'<path d="M5 12l5 5L20 7"/>',truck:'<path d="M2 6h11v10H2zM13 9h5l4 4v3h-9"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',ice:'<path d="M12 2v20M4 7l16 10M20 7L4 17"/>',buyer:'<path d="M3 9l2-5h14l2 5M4 9v11h16V9M9 20v-6h6v6"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',minus:'<path d="M5 12h14"/>',plus:'<path d="M12 5v14M5 12h14"/>',spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',box:'<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>',home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',circ:'<circle cx="12" cy="12" r="7"/>',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',drop:'<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>'};
+const ic=n=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+const S={scr:'home',hist:[],on:true,role:'',helper:false,req:{crop:'',qty:0,loc:'',needs:[],when:''},chat:[],draft:'',ask:'',saved:false,st:0,prov:[],tips:{},tr:'',shared:0,res:'',photo:''};
+const PL=['Daet','Mercedes','Labo','Paracale','Jose Panganiban','Vinzons','Talisay','Basud','San Vicente','Santa Elena','Capalonga'];
+const CR=[['tilapia','Tilapia'],['bangus','Bangus'],['tuna','Tuna'],['isda|fish|catch|huli','Fish'],['pineapple|pinya','Pineapple'],['kamatis|tomato','Tomato'],['saging|banana','Banana'],['palay|rice','Rice'],['gulay|vegetable','Vegetables']];
+const ND=[['yelo|ice|storage|cold|lamig','Ice'],['transport|truck|sasakyan|hatid|deliver','Transport'],['buyer|bumili|bibili|bilhin|bentahan|market|ibenta|sell','Buyer'],['proces','Processing']];
+const TIPS={fish:[['sun','Keep fish in the shade','Avoid direct sun and heat while waiting.'],['ice','Layer fish with ice','Keep the catch chilled and let melt water drain.'],['box','Do not overload boxes','Heavy stacking bruises and damages fish.'],['drop','Rinse with clean water','Remove dirt and blood. Keep tools and boxes clean.']],farm:[['sun','Harvest in cool hours','Keep harvested produce in the shade.'],['box','Use ventilated crates','Do not overfill or stack too high.'],['leaf','Sort out damaged produce','Separate bruised items so they do not spoil the rest.'],['drop','Keep produce dry','Cover it from rain and keep it off wet ground.']]};
+// Simulated AI: reads Filipino or English text. In production, replace with a language-model API call.
+function interpret(t){const r=S.req,x=t.toLowerCase();let m=x.match(/(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|kilogram|kilograms)\b/);
+ if(m)r.qty=parseFloat(m[1].replace(',','.'));else if(S.ask==='qty'&&(m=x.match(/\d+(?:\.\d+)?/)))r.qty=parseFloat(m[0]);
+ PL.forEach(p=>{if(x.includes(p.toLowerCase()))r.loc=p});
+ if(S.ask==='loc'&&!r.loc&&t.length<30)r.loc=t.trim();
+ for(const[k,v]of CR){if(new RegExp(k).test(x)){r.crop=v;break}}
+ ND.forEach(([k,v])=>{if(new RegExp(k).test(x)&&!r.needs.includes(v))r.needs.push(v)});
+ if(/bukas|tomorrow/.test(x))r.when='Tomorrow';else if(/hapon|afternoon/.test(x))r.when='Today, afternoon';else if(/ngayon|today|now/.test(x))r.when='Today'}
+function nextQ(){const r=S.req;
+ if(!r.crop)return['crop','What product do you have? For example tilapia or tomatoes.'];
+ if(!r.qty)return['qty','About how many kilos do you have?'];
+ if(!r.loc)return['loc','Where are you now? Tell me the municipality.'];
+ if(!r.needs.length)return['needs','What help do you need: buyer, transport, ice or storage, or processing?'];
+ if(!r.when)return['when','When do you need it: today or tomorrow?'];return null}
+function send(txt){txt=(txt||'').trim();if(!txt)return;S.draft='';const before=JSON.stringify(S.req);S.chat.push({u:1,t:txt});interpret(txt);
+ const q=nextQ();S.ask=q?q[0]:'';const same=before===JSON.stringify(S.req);
+ S.chat.push({t:(same?'I did not catch that. ':'')+(q?q[1]:'Got it. Please check the summary below.')});R();const i=$('#in');i&&i.focus()}
+function mkProv(){const m={Buyer:['Buyer C','Buyer','buyer'],Transport:['Transport provider B','Transport','truck'],Ice:['Ice supplier A','Ice and storage','ice'],Processing:['Processor D','Processing','gear']};
+ S.prov=S.req.needs.map((n,i)=>({n:m[n][0],k:m[n][1],i:m[n][2],s:i?'wait':'ok'}))}
+function submit(){if(nextQ()){toast('Please complete all details first.');return}
+ if(!S.on){S.saved=true;toast('Saved on this device. It sends when you are online.');R();return}
+ S.saved=false;S.st=2;mkProv();toast('Request sent. Providers were notified.');nav('matches')}
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.T);toast.T=setTimeout(()=>e.style.display='none',2400)}
+function nav(to){if(to!==S.scr){S.hist.push(S.scr);S.scr=to}R();const m=$('.main');m&&(m.scrollTop=S.scr==='chat'?m.scrollHeight:0)}
+const roleName=()=>(S.role==='fish'?'Fisherfolk':S.role==='farm'?'Farmer':'')+(S.helper?' · Helper':'');
+const net=()=>`<button class="chip" data-a="net" aria-label="Switch online or offline" style="background:#fff;color:${S.on?'#0D3B2C':'#6B4A00'}">${S.on?ic('wifi')+'Online':ic('woff')+'Offline'}</button>`;
+function photoBox(){return S.photo?`<div class="row" style="margin-top:10px;gap:12px"><img src="${S.photo}" alt="Photo of your product" style="width:64px;height:64px;object-fit:cover;border-radius:12px"><div style="flex:1" class="sm">Photo added for providers. It is not a freshness check.</div><button class="btn o sm2" style="width:auto" data-a="rmphoto">Remove</button></div>`:`<button class="btn o sm2" style="margin-top:10px" data-a="cam">${ic('cam')}Add a photo</button>`}
+const crops=()=>S.role==='farm'?['Pineapple','Tomato','Banana','Vegetables']:['Tilapia','Bangus','Tuna','Fish'];
+function home(){return `<div class="hero"><div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:2px">FRESHCISION</b>${net()}</div><h1>From farm to sea, help reaches you in time.</h1><p>Tell us what you harvested or caught. We find providers who can help.</p><svg class="w" viewBox="0 0 390 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25C60 0 120 50 195 25S330 0 390 25V50H0Z" fill="#EEF8F4"/></svg></div>
+<div class="main"><div class="h" style="font-size:18px;margin:0">I am a…</div>
+<button class="btn g big" data-a="role" data-v="farm">${ic('leaf')}Farmer</button>
+<button class="btn t big" data-a="role" data-v="fish">${ic('fish')}Fisherfolk</button>
+<button class="btn ${S.helper?'g':'o'}" data-a="helper">${ic('people')}${S.helper?'Helper mode is on':'Someone is helping me'}</button>
+<button class="btn o" data-a="go" data-v="guided" style="border-color:var(--t)">${ic('woff')}Offline guided mode</button>
+${S.st>=2?`<button class="btn o" data-a="go" data-v="matches">${ic('truck')}View my request</button>`:''}
+<div class="sm" style="text-align:center">You decide every step. Providers confirm before anything is final.</div></div>`}
+function summary(){const r=S.req;return `<div class="card"><div class="h">Please check your request</div><div class="kv">${[['Role',roleName()],['Product',r.crop],['Quantity',r.qty+' kg'],['Location',r.loc],['Needs',r.needs.join(', ')],['When',r.when]].map(([a,b])=>`<span>${a}</span><b>${esc(b)}</b>`).join('')}</div>${photoBox()}${S.saved?'<div style="margin-top:10px"><span class="chip wt">Saved on device · not sent yet</span></div>':''}<div class="rw" style="margin-top:12px"><button class="btn o" data-a="edit" style="font-size:15px">Edit</button><button class="btn g" data-a="submit" style="font-size:15px">${S.on?'Confirm &amp; submit':'Save on device'}</button></div></div>`}
+function chat(){if(!S.chat.length)S.chat.push({t:`Kumusta! Tell me what happened with your ${S.role==='fish'?'catch':'harvest'}. You can type or speak.`});
+ return `<div class="main">${S.chat.map(m=>`<div class="bb${m.u?' u':''}">${esc(m.t)}</div>`).join('')}${S.chat.some(m=>m.u)&&!nextQ()&&S.st<2?summary():''}</div>
+<div class="bar"><button class="ib t" data-a="mic" aria-label="Speak">${ic('mic')}</button><button class="ib" data-a="cam" aria-label="Add a photo" style="background:#fff;border:2px solid var(--g);color:var(--g)">${ic('cam')}</button><input id="in" aria-label="Type your message" placeholder="Type or speak in Filipino or English" value="${esc(S.draft)}"><button class="ib g" data-a="send" aria-label="Send">${ic('send')}</button></div>
+<div style="padding:0 14px 10px;background:#fff"><button class="btn o sm2" data-a="go" data-v="guided">Use buttons instead</button></div>`}
+function guided(){const r=S.req,T=[['Buyer','Find a buyer','buyer'],['Transport','Request transport','truck'],['Ice','Ice or storage','ice'],['Processing','Processing','gear']];
+ return `<div class="main"><div class="h" style="margin:0">What do you have?</div><div class="rw" style="flex-wrap:wrap">${crops().map(c=>`<button class="btn ${r.crop===c?'g':'o'} sm2" style="width:auto" data-a="crop" data-v="${c}">${c}</button>`).join('')}</div>
+<div class="h" style="margin:0">What help do you need?</div><div class="grid">${T.map(([k,l,i])=>`<button class="tile${r.needs.includes(k)?' sel':''}" data-a="need" data-v="${k}" aria-pressed="${r.needs.includes(k)}">${ic(i)}${l}</button>`).join('')}</div>
+<div class="h" style="margin:0">How much?</div><div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px"><button class="ib" data-a="qty" data-v="-5" aria-label="Less" style="background:#fff;border:2px solid var(--g);color:var(--g)">${ic('minus')}</button><b style="font-size:26px">${r.qty} kg</b><button class="ib g" data-a="qty" data-v="5" aria-label="More">${ic('plus')}</button></div>
+<div class="h" style="margin:0">Where are you?</div><select id="loc" aria-label="Location"><option value="">Choose location</option>${PL.map(p=>`<option${r.loc===p?' selected':''}>${p}</option>`).join('')}</select>
+<div class="h" style="margin:0">When?</div><div class="rw">${[['Today','Today'],['Tomorrow','Tomorrow'],['Later this week','Later']].map(([v,l])=>`<button class="btn ${r.when===v?'g':'o'} sm2" data-a="when" data-v="${v}">${l}</button>`).join('')}</div>
+${photoBox()}<button class="btn g" data-a="submit">${ic('check')}${S.on?'Submit request':'Save on this device'}</button>
+${S.saved?'<div style="text-align:center"><span class="chip wt">Saved on device · not sent yet</span><div class="sm" style="margin-top:6px">It sends when you switch back online.</div></div>':''}
+<button class="btn o sm2" data-a="go" data-v="chat">Use the assistant instead</button></div>`}
+function matches(){if(S.st<2)return `<div class="main"><div class="card" style="text-align:center"><div class="h">No request yet</div><div class="sm" style="margin-bottom:12px">Start a request and your provider matches will show here.</div><button class="btn g" data-a="req">Start a request</button></div></div>`;
+ const r=S.req,ch={ok:'<span class="chip ok">✓ Confirmed available</span>',wait:'<span class="chip wt">Awaiting reply</span>',acc:'<span class="chip sea">✓ You accepted</span>'};
+ const any=S.prov.some(p=>p.s==='acc');
+ return `<div class="main"><div class="sm">${r.qty} kg ${esc(r.crop)} · ${esc(r.loc)}. Matches are suggestions. A provider is available only after they confirm.</div>
+${S.prov.map((p,i)=>`<div class="card"><div class="row"><div class="ib ok" style="width:44px;height:44px">${ic(p.i)}</div><div style="flex:1"><div class="h" style="margin:0">${p.n}</div><div class="sm">${p.k}</div></div>${ch[p.s]}</div><div style="font-size:14px;margin:10px 0">[Indicative rate] · Ready by [time]</div>
+${p.s==='ok'?`<div class="rw"><button class="btn g sm2" data-a="accept" data-v="${i}">Accept</button><button class="btn o sm2" data-a="ask" data-v="${i}">Ask a question</button></div>`:''}
+${p.s==='wait'?`<div class="rw"><button class="btn o sm2" data-a="remind" data-v="${i}">Send reminder</button><button class="btn t sm2" data-a="sim" data-v="${i}">Demo: provider replies</button></div>`:''}</div>`).join('')}
+<div class="card"><div class="h">Progress</div><div class="rw">${[['Submitted',1],['Matched',1],['Confirmed',any],['Completed',S.st===4]].map(([l,d],i)=>`<div class="step ${d?'d':(i===2&&!any||i===3&&S.st!==4)&&(i===2||any)?'c':''}"><i>${d?ic('check'):i+1}</i>${l}</div>`).join('')}</div></div>
+<button class="btn o" data-a="go" data-v="ai">${ic('spark')}Why these matches? (AI)</button>
+<button class="btn t" data-a="go" data-v="outcome">${ic('check')}Record outcome</button></div>`}
+function ai(){const r=S.req,has=r.crop;
+ return `<div class="main"><div class="card"><div class="h">1 · AI understood you</div>${has?`<div class="rw" style="flex-wrap:wrap;gap:8px">${[r.crop,r.qty+' kg',r.loc].map(x=>`<span class="chip ok">${esc(x)}</span>`).join('')}${r.needs.map(x=>`<span class="chip sea">${x}</span>`).join('')}<span class="chip sea">${esc(r.when)}</span></div>`:'<div class="sm">No request yet. Tell the assistant what you have.</div>'}<div class="sm" style="margin-top:10px">AI never guesses missing details. It asks, then you confirm.</div>${has?'':'<button class="btn g sm2" style="margin-top:10px" data-a="req">Ask the assistant</button>'}</div>
+<div class="card"><div class="h">2 · Why these providers</div>${S.prov.length?S.prov.map(p=>`<div style="font-weight:700;font-size:14px;margin:8px 0 4px">${p.n}</div><div class="row" style="color:var(--g)">${ic('check')}<span style="color:var(--d)">Offers ${p.k.toLowerCase()}</span></div><div class="row" style="color:var(--g)">${ic('check')}<span style="color:var(--d)">Covers ${esc(r.loc)}</span></div><div class="row" style="color:${p.s==='wait'?'#8A6A00':'var(--g)'}">${ic(p.s==='wait'?'circ':'check')}<span style="color:var(--d)">${p.s==='wait'?'Availability: waiting for provider':'Availability: confirmed'}</span></div>`).join(''):'<div class="sm">Submit a request to see how providers are checked.</div>'}</div>
+<div class="card"><div class="h">3 · Shared option (pilot)</div><div style="font-size:14px;line-height:1.4">3 farmers have 20 + 15 + 25 = 60 kg of tomatoes. A buyer needs 50 kg and one truck fits 60 kg.</div>
+<button class="btn t sm2" style="margin-top:10px" data-a="shared">${S.shared===1?'Hide details':'Review shared option'}</button>
+${S.shared===1?`<div class="sm" style="margin-top:10px">Nobody joins without agreeing. The buyer and transporter must also confirm.</div><div class="rw" style="margin-top:10px"><button class="btn g sm2" data-a="join">I agree to join</button><button class="btn o sm2" data-a="nojoin">No thanks</button></div>`:''}${S.shared===2?'<div class="chip ok" style="margin-top:10px">✓ You joined. Waiting for others.</div>':''}</div>
+<div class="sm" style="text-align:center">AI suggests. Providers confirm. You decide. In this prototype the AI runs as simple rules in your browser. A real build would call a language model.</div></div>`}
+function tips(){const k=S.tr||S.role||'fish',L=TIPS[k],n=L.filter((_,i)=>S.tips[k+i]).length;
+ return `<div class="main"><div class="rw"><button class="btn ${k==='fish'?'g':'o'} sm2" data-a="tr" data-v="fish">Fisherfolk</button><button class="btn ${k==='farm'?'g':'o'} sm2" data-a="tr" data-v="farm">Farmer</button></div><span class="chip wt" style="align-self:flex-start">Sample reminders · expert review needed</span><div class="sm">${n} of ${L.length} done</div>
+${L.map(([i,a,b],j)=>`<div class="card row" style="padding:12px 14px;gap:12px"><div class="ib ok" style="width:44px;height:44px">${ic(i)}</div><div style="flex:1"><b style="font-size:15px">${a}</b><div class="sm">${b}</div></div><button class="btn ${S.tips[k+j]?'t':'g'} sm2" style="width:auto" data-a="tip" data-v="${k+j}" aria-pressed="${!!S.tips[k+j]}">${S.tips[k+j]?'✓ Done':'Done'}</button></div>`).join('')}
+<button class="btn g" data-a="req">${ic('truck')}Need ice or transport now?</button><div class="sm" style="text-align:center">General reminders only. Not food-safety advice or a freshness check.</div></div>`}
+function outcome(){if(S.st===4)return `<div class="main"><div class="card" style="text-align:center"><div class="h">Outcome saved</div><div class="sm" style="margin-bottom:12px">Result: ${esc(S.res)}. Thank you. This helps the community learn where help is needed.</div><button class="btn g" data-a="newreq">Start a new request</button></div></div>`;
+ return `<div class="main"><div class="h" style="margin:0">What happened?</div>${['Completed','Partly completed','Not completed'].map(v=>`<button class="btn ${S.res===v?'g':'o'}" data-a="res" data-v="${v}" aria-pressed="${S.res===v}">${v}</button>`).join('')}<div class="h" style="margin:0">Kilos sold or saved</div><input id="kg" type="number" min="0" inputmode="numeric" aria-label="Kilos sold or saved" style="height:48px;border:2px solid var(--l);border-radius:14px;padding:0 14px;font-size:16px" placeholder="0"><button class="btn t" data-a="saveout">${ic('check')}Save outcome</button></div>`}
+function R(){const s=S.scr,F={home,chat,guided,matches,ai,tips,outcome}[s];
+ const T={chat:['Adaptive Assist',roleName()],guided:['Guided request','No internet needed'],matches:['Your matches','Providers who can help'],ai:['AI Coordination Engine','How your request was handled'],tips:['Protect your goods','While you wait for providers'],outcome:['Record outcome','Tell us how it went']}[s];
+ const N=[['home','Home','home',s==='home'],['req','Request','spark',s==='chat'||s==='guided'],['matches','Matches','truck',['matches','ai','outcome'].includes(s)],['tips','Tips','leaf',s==='tips']];
+ $('#app').innerHTML=(s==='home'?'':`<div class="top"><button class="ib" data-a="back" aria-label="Back" style="background:rgba(255,255,255,.18);color:#fff">${ic('back')}</button><div style="flex:1"><b>${T[0]}</b><small>${T[1]}</small></div>${net()}</div>`)+F()+`<nav class="nav" aria-label="Main">${N.map(([a,l,i,o])=>`<button data-a="${a==='req'?'req':'go'}" data-v="${a}"${o?' class="on" aria-current="page"':''}>${ic(i)}${l}</button>`).join('')}</nav>`;
+ const m=$('.main');if(m&&s==='chat')m.scrollTop=m.scrollHeight}
+function mic(){const C=window.SpeechRecognition||window.webkitSpeechRecognition;if(!C){toast('Voice is not supported in this browser. Please type.');return}
+ const r=new C();r.lang='fil-PH';r.onresult=e=>send(e.results[0][0].transcript);r.onerror=()=>toast('Could not hear you. Try again.');r.start();toast('Listening…')}
+function act(a,v){const r=S.req;({
+ cam(){$('#cam').click()},rmphoto(){S.photo='';R()},
+ role(){S.role=v;S.chat=[];nav(S.on?'chat':'guided')},
+ helper(){S.helper=!S.helper;toast(S.helper?'Helper mode on. You act with the farmer\u2019s or fisher\u2019s permission.':'Helper mode off.');R()},
+ go(){nav(v==='home'&&S.scr==='home'?'home':v)},
+ req(){if(!S.role){toast('Choose Farmer or Fisherfolk first.');nav('home')}else nav(S.on?'chat':'guided')},
+ back(){S.scr=S.hist.pop()||'home';R()},
+ net(){S.on=!S.on;if(S.on&&S.saved){S.saved=false;S.st=2;mkProv();toast('Back online. Your request was sent.')}else toast(S.on?'Back online.':'Offline mode. Requests are saved on your device.');R()},
+ send(){send($('#in').value)},mic,submit,
+ edit(){S.req={crop:'',qty:0,loc:'',needs:[],when:''};S.ask='';S.saved=false;S.chat.push({t:'Okay. Tell me the correct details.'});R()},
+ crop(){r.crop=v;R()},need(){const i=r.needs.indexOf(v);i<0?r.needs.push(v):r.needs.splice(i,1);R()},
+ qty(){r.qty=Math.max(0,r.qty+ +v);R()},when(){r.when=v;R()},
+ accept(){S.prov[v].s='acc';toast('Accepted. The provider was told.');R()},
+ ask(){toast('Your question was sent to the provider.')},remind(){toast('Reminder sent.')},
+ sim(){S.prov[v].s='ok';toast('Provider replied: available.');R()},
+ shared(){S.shared=S.shared===1?0:1;R()},join(){S.shared=2;toast('You joined the shared option.');R()},nojoin(){S.shared=0;toast('No problem. Nothing was shared.');R()},
+ tip(){S.tips[v]=!S.tips[v];R()},tr(){S.tr=v;R()},
+ res(){S.res=v;R()},
+ saveout(){if(!S.res){toast('Choose what happened first.');return}S.st=4;toast('Outcome saved.');R()},
+ newreq(){S.req={crop:'',qty:0,loc:'',needs:[],when:''};S.chat=[];S.prov=[];S.st=0;S.res='';S.ask='';S.saved=false;S.shared=0;S.photo='';S.hist=[];S.scr='home';R()}
+})[a]()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
+document.addEventListener('input',e=>{if(e.target.id==='in')S.draft=e.target.value});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='in')act('send')});
+document.addEventListener('change',e=>{if(e.target.id==='loc'){S.req.loc=e.target.value}if(e.target.id==='cam'&&e.target.files[0]){S.photo=URL.createObjectURL(e.target.files[0]);e.target.value='';toast('Photo added to your request.');R()}});
+R();
+</script></body></html>
