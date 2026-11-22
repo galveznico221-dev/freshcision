@@ -387,8 +387,26 @@ acts=r.status==="new"?`<div class="request-actions">${btn("Confirm","pform:confi
 return back()+head("Request "+r.id+" · "+rlabel[r.status],esc(r.produce)+", "+r.quantity+" kg","")+
 `${[["Municipality",r.town],["Service needed",r.need],["Needed by",r.time],["Received",r.received]].map(([k,v])=>`<div class="detail-row"><span>${k}</span><b>${esc(v)}</b></div>`).join("")}${r.helper?`<p class="note">Sent by ${esc(r.helper)} for ${esc(r.farmer)}</p>`:""}${r.photoURL?`<div class="pcard"><img class="thumb" src="${r.photoURL}" alt="Photo added by the farmer"></div>`:""}${r.photo?'<p class="sm">Photo is not a freshness check.</p>':""}<div class="note ${r.contactShared?"":"locked-note"}"><span>${r.contactShared?esc(r.farmer)+" · 0917 000 0124 (sample only, do not call)":`${icon("lock")} Contact hidden. Shown after the farmer accepts.`}</span></div>${r.status==="declined"?`<div class="note">You declined: ${esc(r.reason)}</div>`:""}${["waiting","confirmed","done"].includes(r.status)?`<div class="note">You confirmed: ready by ${esc(r.ready)}, <span class="mono">₱${esc(r.rate)}</span> per kg per day.</div>`:""}${r.ask?`<div class="note">Your question: ${esc(r.ask)}</div>`:""}${r.cond?`<div class="note">Your conditions: ${esc(r.cond)}</div>`:""}${r.reply?`<div class="note">${esc(first)} replied: ${esc(r.reply)}</div>`:""}${r.status==="done"?`<div class="note">Marked as done · ${esc(r.doneKg)} kg handled.</div>`:""}${forms[f]||acts}`}
 function tips(){
-return back()+head("Notes from the field","Good care goes a long way.","General tips only.")+banner("tips")+
-[["Keep fish cool","Use clean ice and covered boxes. Keep the catch out of direct sun."],["Give tomatoes some room","Use clean, rigid crates. Do not overfill them or put heavy sacks on top."],["Check before the trip","Ask about capacity, opening time, rate, and where to unload."],["When signal is weak","Use guided mode. Keep this page open, then send your queued request when you have signal."]].map(([t,p],i)=>`<section class="ledger-row"><span class="step-number">${i+1}</span><div><h3>${t}</h3><p>${p}</p></div></section>`).join("")+`<div class="actions">${btn("Make a request","guided")}</div>`}
+let farmer=state.who==="farmer";
+let steps=farmer?
+[
+["Harvest in cool hours","Cut or pick in the morning or late afternoon. Keep the harvest out of direct heat."],
+["Sort before loading","Remove damaged, wet, or bruised produce. Keep the rest in separate clean crates."],
+["Use ventilated crates","Do not overfill crates or stack heavy sacks on top. Leave airflow around the produce."],
+["Keep it dry and shaded","Cover the harvest, keep it off wet ground, and move it into shade while waiting."],
+["Confirm the pickup","Check the truck or buyer capacity, meeting point, expected arrival, and unload area."]
+]:
+[
+["Keep fish shaded","Move the catch away from direct sun and heat as soon as it comes ashore."],
+["Use clean ice","Pack fish with clean ice in covered containers. Use enough ice for the waiting time."],
+["Drain meltwater","Keep meltwater out of the fish and boxes. Do not let fish sit in dirty standing water."],
+["Do not overload boxes","Use clean boxes and avoid heavy stacking. Too much weight can bruise the catch."],
+["Confirm ice or cold storage","Check capacity, opening time, pickup or unloading point, and the indicative rate."]
+];
+return back()+head("Notes from the field",farmer?"Protect the harvest":"Protect the catch","General reminders only. Expert review needed.")+banner("tips")+
+`<div class="eyebrow">${farmer?"Farmer steps":"Fisherfolk steps"}</div>`+
+steps.map(([t,p],i)=>`<section class="ledger-row"><span class="step-number">${i+1}</span><div><h3>${t}</h3><p>${p}</p></div></section>`).join("")+
+`<div class="note">These are sample reminders, not food-safety advice. Local conditions can change.</div><div class="actions">${btn("Make a request","guided")}</div>`}
 function outcome(){
 let m=myReq(),d=!!(m&&m.status==="done"),q=d?m.doneKg:250,pr=d?m.produce:"Pineapple",pl=d?m.town:"Labo",who=d?providers[state.acceptedProvider??0].name:"Labo Harvest Transport";
 return back()+head("Field record · "+(d?"FC-024":"FC-023")+" · Sample","A harvest that made it.",d?esc(q)+" kg of "+esc(pr.toLowerCase())+" handled by "+esc(who)+".":"250 kg of pineapple, from Labo to Daet market. A sample completed trip.")+
