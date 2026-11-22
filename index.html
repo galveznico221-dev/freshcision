@@ -1,510 +1,457 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRESHCISION Adaptive Assist – Prototype</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#EEF7F5" />
+<title>FRESHCISION — Your field notebook by the sea</title>
 <style>
-:root{--d:#0D3B2C;--g:#17794A;--t:#0B6E78;--f:#EEF8F4;--m:#3F5F55;--l:#BFE3D6}
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap");
+:root{--paper:#EEF7F5;--surface:#BFDCD8;--accent:#0B5A55;--ink:#0C2A2B;--line:1px solid var(--surface);--font:"Manrope",sans-serif;--data:"JetBrains Mono",monospace}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0D3B2C,#0B6E78);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--d)}
-#app{width:100%;max-width:420px;height:100vh;max-height:860px;background:var(--f);position:relative;overflow:hidden;display:flex;flex-direction:column}
-@media(min-width:500px){#app{border-radius:32px;box-shadow:0 20px 60px rgba(0,0,0,.45)}}
-button,input,select{font-family:inherit}
+body{margin:0;background:#7FBCC8;color:var(--ink);font:16px/1.6 var(--font)}
+button,input,select,textarea{font:inherit;color:inherit}
+button,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 button{cursor:pointer}
-:focus-visible{outline:3px solid #5FD0C7;outline-offset:2px}
-svg{flex:none}
-.top{flex:none;padding:28px 14px 14px;background:linear-gradient(160deg,#0D3B2C,#17794A 60%,#0B6E78);color:#fff;display:flex;align-items:center;gap:10px;border-radius:0 0 26px 26px}
-.top.provider-top{background:linear-gradient(145deg,#0B4F57,#0B6E78)}
-.top b{font-size:18px;display:block}.top small{font-size:13px;color:#D6F3EA}
-.top-copy{min-width:0;flex:1}
-.view-switch{display:flex;gap:2px;width:max-content;max-width:100%;margin-top:7px;padding:3px;border-radius:99px;background:rgba(255,255,255,.18)}
-.view-switch button{width:auto;min-height:28px;padding:4px 8px;border:0;border-radius:99px;background:transparent;color:#fff;font-size:11px;font-weight:800;white-space:nowrap}
-.view-switch button.on{background:#fff;color:#0D3B2C}
-.provider-top .view-switch button.on{color:#0B4F57}
-.provider-entry{border:2px solid var(--t);color:#0B4F57}
-.provider-panel{background:#F1FAF8}
-.provider-chips{display:flex;flex-wrap:wrap;gap:8px}
-.provider-chip{min-height:42px;width:auto;padding:7px 12px;border:2px solid var(--l);border-radius:99px;background:#fff;color:var(--d);font-weight:700;font-size:13px}
-.provider-chip[aria-pressed="true"]{background:var(--t);border-color:var(--t);color:#fff}
-.provider-topline{flex:none;padding:8px 14px;background:#D6EEF1;color:#0B4F57;text-align:center;font-size:12px;font-weight:800}
-.provider-tabs{flex:none;display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:#fff}
-.provider-tabs button{flex:1;min-width:82px;min-height:52px;padding:6px 8px;border:1px solid #9CB5AA;border-radius:14px;background:#fff;color:#294D40;font-size:12px;font-weight:800}
-.provider-tabs button.on{background:#0B4F57;color:#fff;border-color:#0B4F57}
-.provider-card{width:100%;text-align:left;color:var(--d);font:inherit;border:0;cursor:pointer}
-.provider-card:hover{box-shadow:0 8px 22px rgba(11,79,87,.18)}
-.provider-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.provider-status{display:inline-flex;align-items:center;padding:5px 10px;border-radius:99px;font-size:12px;font-weight:800}
-.provider-status.confirmed{background:#D9F2E3;color:#0D5A36}
-.provider-status.waiting{background:#FFF1CC;color:#6B4A00}
-.provider-status.declined{background:#E4E8E5;color:#354B40}
-.provider-status.new{background:#D6EEF1;color:#0B4F57}
-.provider-form input,.provider-form textarea,.provider-form select{width:100%;min-height:46px;border:2px solid var(--l);border-radius:14px;padding:10px 12px;background:#fff;color:var(--d);font:inherit}
-.provider-form textarea{min-height:88px;resize:vertical}
-.provider-form .form-field{margin:10px 0}
-.photo-thumb{width:72px;height:72px;object-fit:cover;border-radius:12px}
-.hero{flex:none;position:relative;padding:44px 24px 62px;background:linear-gradient(160deg,#0D3B2C,#17794A 55%,#0B6E78);color:#fff}
-.hero h1{margin:24px 0 8px;font-size:28px;line-height:1.15}.hero p{margin:0;font-size:15px;color:#D6F3EA;line-height:1.4}
-.hero svg.w{position:absolute;left:0;bottom:-1px;width:100%;height:50px}
-.main{flex:1;overflow:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
-.btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border:0;border-radius:16px;font-weight:800;font-size:16px;padding:0 16px;width:100%;transition:transform .1s}
-.btn:active,.tile:active{transform:scale(.97)}
-.btn:disabled,.btn[aria-disabled="true"]{background:#D8E2DC;color:#355347;border:1px solid #6D877A;cursor:not-allowed;opacity:1;transform:none}
-.g{background:var(--g);color:#fff}.t{background:var(--t);color:#fff}
-.o{background:#fff;color:var(--d);border:2px solid var(--g)}
-.big{min-height:78px;font-size:20px;justify-content:flex-start;gap:16px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;font-size:13px;font-weight:700;border:0}
-.chip svg{width:16px;height:16px}
-.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 6px 18px rgba(13,59,44,.1)}
-.ib{width:48px;height:48px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;flex:none}
-.h{font-weight:800;font-size:17px;margin-bottom:8px}
-.sm{font-size:13px;color:var(--m);line-height:1.4}
-.bb{max-width:84%;padding:12px 16px;font-size:15px;line-height:1.4;border-radius:18px 18px 18px 4px;background:#fff;align-self:flex-start}
-.bb.u{align-self:flex-end;background:var(--g);color:#fff;border-radius:18px 18px 4px 18px}
-.kv{display:grid;grid-template-columns:90px 1fr;gap:6px 8px;font-size:14px}.kv span{color:var(--m)}
-.bar{flex:none;display:flex;gap:8px;padding:10px 14px;background:#fff;align-items:center}
-.bar input{flex:1;min-width:0;height:48px;border:2px solid var(--l);border-radius:24px;padding:0 16px;font-size:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.tile{height:92px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:15px;font-weight:800;border:2px solid var(--l);background:#fff;color:var(--d)}
-.sel{background:var(--g);color:#fff;border-color:var(--g)}
-.row{display:flex;align-items:center;gap:10px;font-size:14px}
-.rw{display:flex;gap:10px}
-.sm2{min-height:44px;font-size:14px}
-select{width:100%;height:48px;border:2px solid var(--l);border-radius:14px;padding:0 12px;font-size:15px;background:#fff;color:var(--d)}
-.nav{flex:none;display:flex;background:#fff;border-top:1px solid #D5EBE2;padding:6px 6px 10px}
-.nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:700;font-size:12px;color:var(--m);padding:6px;border-radius:12px}
-.nav .on{color:var(--g);background:#E3F4EB}
-.helper-banner{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:#D6EEF1;color:#0B4F57;font-size:14px;font-weight:700}
-.helper-banner .btn{width:auto;min-height:52px;padding:0 12px;background:#fff;color:#0B4F57;border:2px solid #0B4F57;font-size:14px}
-.journey-shell{flex:none;padding:8px 12px;background:#EAF5F0}
-.journey-trigger{min-height:36px;padding:6px 12px;border:1px solid #567768;border-radius:99px;background:#fff;color:#173F31;font-size:13px;font-weight:800}
-.journey-panel{display:grid;gap:8px;margin-top:8px;max-height:42vh;overflow:auto}
-.journey-panel section{padding:10px;background:#fff;border-radius:14px}
-.journey-panel section> b{display:block;margin-bottom:6px;font-size:13px}
-.journey-step{display:flex;width:100%;min-height:40px;justify-content:space-between;gap:8px;padding:8px;border:0;border-top:1px solid #D5EBE2;background:#fff;color:#0D3B2C;text-align:left;font:inherit;font-size:12px}
-.journey-step b{white-space:nowrap}
-.journey-step.current{color:#0B4F57}
-.journey-step.locked{color:#355347}
-.journey-step.done{color:#0D5A36}
-.journey-step[aria-disabled="true"]{cursor:pointer}
-.form-field{display:flex;flex-direction:column;gap:6px}
-.field-label{font-size:14px;font-weight:800}
-.field-error{min-height:18px;font-size:13px;font-weight:700;color:#8E1B10}
-.helper-form input:not([type=checkbox]),.helper-form select{width:100%;height:48px;border:2px solid var(--l);border-radius:14px;padding:0 12px;font-size:15px;background:#fff;color:var(--d)}
-.helper-form input[type=checkbox]{width:22px;height:22px;accent-color:var(--g);flex:none}
-.helper-start-wrap{flex:1}.helper-start-wrap .btn{width:100%}.helper-start-wrap .btn:disabled{pointer-events:none}
-.disabled-accept-wrap{flex:1}.disabled-accept-wrap .btn{width:100%}.disabled-accept-wrap .btn:disabled{pointer-events:none}
-.helper-info{line-height:1.45}
-.helper-info strong{display:block;margin-bottom:4px}
-.disabled-reason{font-size:13px;font-weight:700;color:#355347}
-.sheet-backdrop,.confirm-backdrop{position:fixed;inset:0;z-index:10;display:flex;align-items:flex-end;justify-content:center;background:rgba(4,26,19,.62)}
-.accept-sheet{width:100%;max-width:420px;max-height:88vh;overflow:auto;padding:20px 18px 28px;background:var(--f);border-radius:24px 24px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.24)}
-.sheet-handle{width:44px;height:5px;border-radius:9px;background:#78958A;margin:0 auto 16px}
-.accept-sheet .btn{min-height:56px}
-.confirm-backdrop{z-index:11;align-items:center;padding:18px}
-.confirm-dialog{width:100%;max-width:380px;padding:20px;background:var(--f);border-radius:22px;box-shadow:0 16px 48px rgba(0,0,0,.28)}
-.step{flex:1;text-align:center;font-size:12px;font-weight:700}.step i{display:flex;width:34px;height:34px;border-radius:50%;margin:0 auto 6px;align-items:center;justify-content:center;font-style:normal;background:#fff;border:2px solid var(--l);color:var(--m)}
-.step.d i{background:var(--g);border-color:var(--g);color:#fff}.step.c i{background:var(--t);border-color:var(--t);color:#fff}
-.ok{background:#D9F2E3;color:#0D5A36}.wt{background:#FFF1CC;color:#6B4A00}.sea{background:#D6EEF1;color:#0B4F57}
-#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--d);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;max-width:340px;text-align:center;display:none;z-index:9}
-</style></head><body>
-<div id="app"></div><input type="file" id="cam" accept="image/*" capture="environment" hidden aria-label="Take or choose a photo"><div id="toast" role="status" aria-live="polite"></div>
+button:disabled{cursor:not-allowed;background:var(--surface);color:var(--ink);border-color:var(--surface)}
+button:active:not(:disabled){background:var(--surface);color:var(--ink)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+h1{font-size:34px;font-weight:500;letter-spacing:-1.5px;line-height:1.2}
+h2{font-size:23px;font-weight:600;letter-spacing:-.7px;line-height:1.3}
+h3{font-size:17px;font-weight:700;letter-spacing:-.3px}
+svg{width:23px;height:23px;flex-shrink:0;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.sea-scene{position:fixed;inset:0;z-index:0;overflow:hidden}
+.sea-scene .bg{width:100%;height:100%;display:block;stroke:none;stroke-width:0}
+.sea-scene svg,.sea-window svg{stroke:none;fill:initial}
+#app{position:relative;z-index:1}
+@keyframes drift{to{transform:translateX(-240px)}}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.d1{animation:drift 14s linear infinite}.d2{animation:drift 9s linear infinite}.d3{animation:drift 20s linear infinite}.bob{animation:bob 5s ease-in-out infinite}
+.sea-window{margin:0 -23px;height:150px;overflow:hidden;border-bottom:var(--line)}
+.sea-window svg{width:100%;height:100%;display:block}
+.app-shell{max-width:440px;margin:auto;min-height:100dvh;background:var(--paper);border-left:var(--line);border-right:var(--line);padding-bottom:100px}
+.app-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:17px 23px 14px;background:var(--paper);border-bottom:var(--line);height:79px}
+.brand{display:flex;gap:9px;align-items:center;text-decoration:none;font-size:18px;font-weight:800;letter-spacing:-.7px}
+.brand>svg{width:29px;height:34px;color:var(--accent)}
+.brand small{display:block;font-size:9px;letter-spacing:2.1px;font-weight:600;line-height:1.8}
+.icon-button{width:48px;height:48px;display:grid;place-items:center;background:none;border:var(--line);border-radius:50%;position:relative}
+.count-dot{position:absolute;right:0;top:0;background:var(--accent);color:var(--paper);border:1px solid var(--paper);font-size:10px;padding:0 5px}
+.main{padding:0 23px 25px}
+.location-strip{display:flex;align-items:center;justify-content:space-between;border-bottom:var(--line);padding:8px 0 7px;font-size:12px}
+.location-strip>span{display:flex;gap:5px;align-items:center}
+.location-strip svg{width:15px;height:15px}
+.connection{display:flex;align-items:center;gap:6px;border:0;background:none;min-height:48px;font-size:12px;padding:0 4px}
+.home-greeting{padding:26px 0 24px}
+.eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:12px}
+.home-greeting h1{font-size:35px;line-height:1.22;letter-spacing:-1.6px}
+.home-greeting h1 span{font-weight:700}
+.home-greeting p{font-size:14px;margin-top:9px}
+.assist-panel{position:relative;overflow:hidden;padding:22px 22px 44px;background:var(--accent);color:var(--paper);border:1px solid var(--accent);border-radius:2px}
+.assist-panel>*{position:relative;z-index:1}
+.assist-panel::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='22'%3E%3Cpath d='M0 11q20-14 40 0t40 0V22H0z' fill='%23127C73'/%3E%3C/svg%3E") repeat-x;background-size:80px 22px}
+.assist-top{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:700;letter-spacing:1.8px}
+.assist-top svg{width:20px;height:20px}
+.assist-panel h2{font-size:29px;font-weight:500;line-height:1.22;letter-spacing:-.8px;margin:16px 0 20px}
+.btn{min-height:54px;border:1px solid var(--accent);background:var(--accent);color:var(--paper);border-radius:2px;padding:13px 17px;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:700;text-decoration:none;line-height:1.5}
+.btn.secondary{background:var(--paper);color:var(--accent)}
+.btn.light{background:var(--surface);color:var(--accent);border-color:var(--surface)}
+.assist-panel .btn{background:var(--paper);color:var(--accent);border-color:var(--paper);width:100%;justify-content:space-between}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:26px 0 0;padding-bottom:12px;border-bottom:1px solid var(--accent)}
+.section-title h2{font-size:18px;letter-spacing:-.4px}
+.text-button{background:none;color:var(--accent);border:0;min-height:48px;padding:8px 0;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+.text-button svg{width:16px;height:16px}
+.request-sheet{padding:18px 0 0}
+.request-top{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--accent)}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 8px;border:1px solid var(--accent);color:var(--accent);line-height:1.7}
+.status.confirmed{background:var(--accent);color:var(--paper)}
+.status.declined{border-style:dashed;text-decoration:line-through}
+.status.locked,.locked-note{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M-2 2L2-2M0 8L8 0M6 10L10 6' stroke='%23BFDCD8' fill='none'/%3E%3C/svg%3E")}
+.locked-note>span{background:var(--paper)}
+.request-title{display:flex;align-items:center;gap:8px;margin:15px 0 3px;font-size:14px}
+.request-title svg{width:19px;height:19px}
+.request-quantity{font:52px/1.2 var(--data);letter-spacing:-3px;margin:6px 0 9px}
+.request-quantity small{font:18px var(--font);letter-spacing:0;margin-left:7px}
+.request-detail{display:flex;align-items:center;gap:7px;font-size:13px}
+.request-detail svg{width:15px;height:15px}
+.request-link{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;border-top:var(--line);border-bottom:var(--line);min-height:55px;margin-top:17px;padding:10px 0;font-weight:700;font-size:14px;color:var(--accent)}
+.match-label{font-size:11px;font-weight:500;display:block}
+.tip-strip{display:flex;align-items:flex-start;gap:13px;margin:23px 0 0;padding:18px 0;border-bottom:var(--line)}
+.tip-strip>svg{margin-top:2px;width:21px}
+.tip-strip .eyebrow{margin-bottom:5px;font-size:9px}
+.tip-strip p{font-size:14px;line-height:1.7}
+.tip-strip .text-button{min-height:48px}
+.sample-line{font-size:10px;letter-spacing:1.1px;text-align:center;color:var(--accent);margin-top:22px}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,440px);padding:8px 10px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--surface);background:var(--paper);z-index:15;display:grid;grid-template-columns:repeat(4,1fr)}
+.bottom-nav::before{content:"";position:absolute;left:0;right:0;top:-11px;height:10px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='10'%3E%3Cpath d='M0 5q10-10 20 0t20 0V10H0z' fill='%23EEF7F5'/%3E%3C/svg%3E") repeat-x;background-size:40px 10px}
+.bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:62px;padding:7px 3px 3px;background:none;border:0;font-size:10px;font-weight:600;color:var(--accent);position:relative}
+.bottom-nav .nav-icon{padding:3px 16px;border-radius:2px;display:block}
+.bottom-nav button.active .nav-icon{background:var(--surface)}
+.bottom-nav button.active{font-weight:800}
+.bottom-nav svg{width:22px;height:22px}
+.back{display:flex;align-items:center;gap:8px;min-height:54px;background:none;border:0;padding:12px 0;margin:4px 0 12px;color:var(--accent);font-size:13px}
+.back svg{width:19px}
+.page-head{margin:0 0 28px}
+.page-head h1{overflow-wrap:anywhere}
+.page-head p{font-size:14px;margin-top:8px}
+.page-head .eyebrow{font-size:9px;letter-spacing:1.3px}
+.split{display:grid;gap:25px}
+.panel{border:var(--line);padding:20px}
+.panel h2{margin-bottom:15px}
+.panel p+p{margin-top:12px}
+.actions{display:flex;flex-direction:column;gap:11px;margin-top:23px}
+.actions .btn{width:100%}
+.field{display:block;font-size:16px;font-weight:600;margin:23px 0}
+.field input,.field textarea,.field select{display:block;width:100%;min-height:56px;background:var(--paper);border:1px solid var(--accent);border-radius:2px;padding:13px;margin-top:9px;font-weight:400;font-size:16px;max-width:100%}
+.field textarea{min-height:120px;resize:vertical}
+.field input[type=file]{font-size:14px}
+.helper,.small-text{font-size:16px;font-weight:400;margin-top:8px}
+.note{background:var(--surface);border-left:2px solid var(--accent);padding:17px;font-size:16px;line-height:1.7;margin:20px 0}
+.locked-note{background-color:var(--paper);border:var(--line)}
+.quantity{font:70px/1.2 var(--data);letter-spacing:-4px;margin:22px 0;overflow-wrap:anywhere}
+.quantity small{font:20px var(--font);letter-spacing:0}
+.detail-row{display:flex;align-items:start;justify-content:space-between;gap:15px;padding:17px 0;border-bottom:var(--line);font-size:15px}
+.detail-row>span{color:var(--accent);flex-shrink:0}
+.detail-row b{text-align:right;font-weight:600;overflow-wrap:anywhere}
+.mono{font-family:var(--data)}
+.ledger-row{display:flex;align-items:center;gap:12px;padding:23px 0;border-bottom:var(--line);flex-wrap:wrap}
+.row-content{flex:1;min-width:140px}
+.row-content p{font-size:16px;margin-top:6px}
+.row-icon{display:grid;place-items:center;width:42px;height:48px;border:var(--line)}
+.row-end{text-align:right}
+.ledger-row .btn{width:100%}
+.message{padding:19px 0;border-bottom:var(--line);font-size:16px;line-height:1.8}
+.message strong{display:block;font-size:10px;letter-spacing:1.4px;color:var(--accent);margin-bottom:8px}
+.message.you{background:var(--surface);padding:17px;margin:15px 0 0 26px;border:0}
+.quick{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.quick button{min-height:52px;border:1px solid var(--accent);background:none;padding:10px 12px;font-size:13px}
+.chat-form{display:flex;gap:8px;margin-top:9px}
+.chat-form input{min-width:0;flex:1;border:1px solid var(--accent);background:var(--paper);padding:13px;font-size:16px}
+.chat-form .btn{padding:12px}
+.provider-row{padding:25px 0;border-top:1px solid var(--accent)}
+.provider-row h2{margin:16px 0 8px}
+.provider-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;font-size:14px}
+.provider-meta span:last-child{grid-column:1/-1}
+.empty{padding:27px 20px;border:var(--line)}
+.empty>svg{width:35px;height:35px;margin-bottom:22px}
+.empty p{margin:15px 0 25px}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{display:flex;align-items:center;gap:15px;padding:19px 0;border-bottom:var(--line)}
+.step-number{display:grid;place-items:center;width:35px;height:35px;border:1px solid var(--accent);font:13px var(--data);flex-shrink:0}
+.steps .done .step-number{background:var(--accent);color:var(--paper)}
+.steps p{font-size:14px;margin-top:3px}
+.steps li>.status{margin-left:auto}
+.steps h3{font-size:15px}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bento>div{border:var(--line);padding:18px;min-width:0}
+.bento .big{grid-column:1/-1;background:var(--surface)}
+.bento h3{font-size:17px}
+.bento .quantity{font-size:66px}
+.bento p{font-size:16px}
+.bento .mono{font-size:28px}
+.bento .eyebrow{font-size:9px;letter-spacing:1px}
+.checkline{display:flex;align-items:center;gap:12px;min-height:52px;margin:18px 0;font-size:16px}
+.checkline input{width:23px;height:23px;accent-color:var(--accent);flex-shrink:0}
+.request-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+.request-actions .btn{font-size:13px;padding:12px 8px}
+.mode-banner{padding:13px 23px;background:var(--surface);border-bottom:1px solid var(--accent);font-size:14px}
+.mode-banner .text-button{display:inline}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:394px;background:var(--ink);color:var(--paper);padding:16px 20px;font-size:15px;z-index:25;border:1px solid var(--paper)}
+.toast:empty{display:none}
+.account-links{display:grid;gap:0;border-top:var(--line);margin-top:27px}
+.account-links .text-button{border-bottom:var(--line);justify-content:space-between;min-height:60px;font-size:15px;text-decoration:none}
+.wizard-progress{display:flex;gap:5px;margin:4px 0 26px}
+.wizard-progress span{height:3px;background:var(--surface);flex:1}
+.wizard-progress .done{background:var(--accent)}
+.wizard-field{min-height:235px}
+.wizard-field .field{margin-top:26px}
+.wizard-field input[type=number]{font:48px var(--data);letter-spacing:-2px;border-width:0 0 1px;padding:8px 0}
+.wizard-actions{display:grid;gap:12px}
+.wizard-actions .btn{width:100%}
+.wizard-count{font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:14px}
+.screen-meta{display:flex;justify-content:space-between;margin-bottom:16px;font-size:11px;color:var(--accent)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--accent);margin-bottom:6px}
+.tabs button{min-height:60px;background:none;border:0;border-bottom:3px solid transparent;font-size:11px;font-weight:700;color:var(--accent);padding:6px 2px;line-height:1.3}
+.tabs button.on{border-bottom-color:var(--accent);background:var(--surface)}
+.tabs b{display:block;font:500 16px var(--data)}
+.chipb{min-height:48px;border:1px solid var(--accent);background:var(--paper);color:var(--accent);padding:8px 12px;font-size:13px;font-weight:600;border-radius:2px}
+.chipb.on{background:var(--accent);color:var(--paper)}
+.err{font-size:14px;margin:-14px 0 16px;font-weight:600;border-left:2px solid var(--accent);padding-left:8px}
+.pv .app-header{background:var(--accent);color:var(--paper);border-bottom-color:var(--accent)}
+.pv .brand>svg{color:var(--paper)}
+.pv .icon-button{border-color:var(--paper)}
+.pv .count-dot{background:var(--paper);color:var(--accent)}
+.vsw{min-height:48px;border:1px solid currentColor;background:none;padding:0 10px;font-size:11px;font-weight:700;border-radius:2px}
+.thumb{width:56px;height:56px;border:var(--line);object-fit:cover;display:grid;place-items:center;flex-shrink:0}
+.radio{display:flex;align-items:center;gap:12px;min-height:52px;font-size:16px}
+.radio input{width:23px;height:23px;accent-color:var(--accent)}
+.pcard{display:flex;gap:12px;align-items:center;margin:14px 0 4px}
+.fab{position:fixed;bottom:98px;right:max(14px,calc(50% - 206px));width:52px;height:52px;border-radius:50%;border:1px solid var(--paper);background:var(--accent);color:var(--paper);display:grid;place-items:center;z-index:14}
+.fab svg{width:24px;height:24px}
+.chat-bar{display:flex;gap:8px;align-items:center;position:sticky;bottom:88px;background:var(--paper);padding:10px 0}
+.chat-bar input{min-width:0;flex:1;border:1px solid var(--accent);background:var(--paper);padding:13px;font-size:16px;min-height:52px}
+.ib-sq{width:52px;height:52px;flex:none;display:grid;place-items:center;border:1px solid var(--accent);background:var(--paper);color:var(--accent);border-radius:2px}
+.chat-bar .btn{padding:0;width:52px;min-height:52px;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.sway{transform-origin:70px 122px;animation:sway 3.2s ease-in-out infinite}
+.wv{transform-origin:79px 82px;animation:wavearm 1.2s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(1.6deg)}}
+@keyframes wavearm{0%,100%{transform:rotate(0)}50%{transform:rotate(-28deg)}}
+@media(min-width:600px){.app-shell{border-left:1px solid var(--accent);border-right:1px solid var(--accent)}.bottom-nav{border-left:1px solid var(--accent);border-right:1px solid var(--accent)}}
+@media(max-width:359px){.main{padding-inline:18px}.app-header{padding-inline:18px}.home-greeting h1{font-size:31px}.brand{font-size:16px}.quantity{font-size:60px}.request-actions{grid-template-columns:1fr}.sea-window{margin:0 -18px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;stroke:none;fill:initial" aria-hidden="true"><defs>
+<pattern id="wv1" width="240" height="60" patternUnits="userSpaceOnUse"><path d="M0 30q60-30 120 0t120 0V60H0z" fill="#5FA8B8"/></pattern>
+<pattern id="wv2" width="240" height="60" patternUnits="userSpaceOnUse"><path d="M0 30q60-30 120 0t120 0V60H0z" fill="#3E8FA3"/></pattern>
+<pattern id="wv3" width="240" height="60" patternUnits="userSpaceOnUse"><path d="M0 30q60-30 120 0t120 0V60H0z" fill="#1F6F85"/></pattern>
+<symbol id="banca" viewBox="0 0 120 70"><path d="M58 3V50" stroke="#0C2A2B" stroke-width="2"/><path d="M60 6 94 48H60z" fill="#F7F3E8"/><path d="M56 14 30 48h26z" fill="#E9DFC4"/><path d="M18 50h84l-12 12H30z" fill="#0C2A2B"/><path d="M6 57h108" stroke="#0C2A2B" stroke-width="2"/><ellipse cx="10" cy="62" rx="9" ry="3" fill="#0C2A2B"/><ellipse cx="110" cy="62" rx="9" ry="3" fill="#0C2A2B"/></symbol>
+<symbol id="palm" viewBox="0 0 60 120"><path d="M30 120Q26 80 34 30" stroke="#5B4636" stroke-width="5" fill="none"/><path d="M34 30Q10 20 0 36Q20 28 34 30z" fill="#0C5C48"/><path d="M34 30Q58 20 60 40Q46 28 34 30z" fill="#0C5C48"/><path d="M34 30Q20 6 6 8Q26 12 34 30z" fill="#0C5C48"/><path d="M34 30Q50 4 58 8Q40 12 34 30z" fill="#0C5C48"/><path d="M34 30Q34 8 30 0Q40 10 34 30z" fill="#0C5C48"/></symbol>
+</defs></svg>
+<div class="sea-scene" aria-hidden="true"><svg class="bg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
+<rect width="1440" height="900" fill="#CFE8EC"/><circle cx="1180" cy="170" r="70" fill="#F4D58D"/>
+<path d="M0 520 180 430 340 500 520 410 720 510 940 440 1160 520 1440 450V620H0z" fill="#8FC1B3"/>
+<rect y="520" width="1440" height="380" fill="#7FBCC8"/>
+<g class="d1"><rect y="540" width="1680" height="60" fill="url(#wv1)"/></g><rect y="600" width="1440" height="300" fill="#5FA8B8"/>
+<g class="d2"><rect y="640" width="1680" height="60" fill="url(#wv2)"/></g><rect y="700" width="1440" height="200" fill="#3E8FA3"/>
+<g class="d3"><rect y="760" width="1680" height="60" fill="url(#wv3)"/></g><rect y="820" width="1440" height="80" fill="#1F6F85"/>
+<use class="bob" href="#banca" x="420" y="520" width="240" height="140"/><use class="bob" href="#banca" x="1020" y="600" width="130" height="76"/>
+<path d="M0 780Q220 730 400 800V900H0z" fill="#EBDDBB"/><path d="M1440 750Q1260 720 1060 810V900H1440z" fill="#EBDDBB"/>
+<use href="#palm" x="30" y="560" width="140" height="280"/><use href="#palm" x="150" y="640" width="100" height="200"/><use href="#palm" x="1290" y="540" width="150" height="300"/>
+</svg></div>
+<div id="app"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const I={leaf:'<path d="M5 19C5 10 11 5 19 5c0 8-5 14-14 14z"/><path d="M5 19c3-5 6-8 9-10"/>',fish:'<path d="M3 12c3-5 9-6 13-3l5-3v12l-5-3c-4 3-10 2-13-3z"/><circle cx="8" cy="11" r=".8"/>',people:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c3 0 4 2 4 5"/>',woff:'<path d="M2 2l20 20M5 12.5a10 10 0 0 1 4-2.4M2 8.8a15 15 0 0 1 5-3M16 11a10 10 0 0 1 3 1.5M12 19h.01"/>',wifi:'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19h.01"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',back:'<path d="M15 5l-7 7 7 7"/>',check:'<path d="M5 12l5 5L20 7"/>',truck:'<path d="M2 6h11v10H2zM13 9h5l4 4v3h-9"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',ice:'<path d="M12 2v20M4 7l16 10M20 7L4 17"/>',buyer:'<path d="M3 9l2-5h14l2 5M4 9v11h16V9M9 20v-6h6v6"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',minus:'<path d="M5 12h14"/>',plus:'<path d="M12 5v14M5 12h14"/>',spark:'<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',box:'<path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8"/>',home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',circ:'<circle cx="12" cy="12" r="7"/>',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',drop:'<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>'};
-const ic=n=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
-const REQUEST_STATUSES=['DRAFT','CONFIRMED_BY_USER','SAVED_OFFLINE','SUBMITTED','PROVIDER_RESPONDED','ACCEPTED','DONE_BY_PROVIDER','OUTCOME_RECORDED'];
-function blankRequest(role=''){return{id:null,receivedAt:0,submittedAt:0,role,crop:'',qty:0,loc:'',needs:[],when:'',name:'',phone:'',address:'',photo:'',helper:null,status:'DRAFT',history:[{status:'DRAFT',actor:'system',event:'created',at:Date.now()}],journey:{photoSkipped:false,aiViewed:false,aiReviewed:false,inboxViewed:false,providerResponded:false,responseReviewed:false,contactViewed:false,learned:false},provider:{status:'new',providerId:null,readyTime:'',rate:'',note:'',declineReason:'',question:'',conditions:'',farmerReply:'',doneKg:'',acceptedBy:'',acceptedWith:'',stale:false},outcome:'',outcomeKg:'',excludedProviderIds:[],responseTimeMs:null}}
-const S={scr:'home',hist:[],view:'farmer',on:true,inputMode:'chat',helper:false,helperName:'',helperRelationship:'',beneficiaryName:'',helperPermission:false,helperDraft:{name:'',relationship:'',beneficiary:'',permission:false},helperAttempted:false,helperReturn:'home',endHelperConfirm:false,acceptProvider:null,req:blankRequest(),chat:[],draft:'',ask:'',providerProfiles:[],requests:[],currentRequestId:null,nextRequestId:1,providerProfile:null,providerDraft:{name:'',type:'',services:[],areas:[],capacity:'',schedule:'',conditions:'',rate:'',phone:''},providerProfileAttempted:false,providerTab:'new',providerRequestId:null,providerAction:'',providerActionRequestId:null,providerActionAttempted:false,providerActionDraft:{readyTime:'',rate:'',note:'',reason:'',question:'',conditions:'',doneKg:''},providerQueue:[],farmerReplyOpen:false,farmerReplyText:'',journeyOpen:false,tips:{},tr:'',shared:0,outcomeEdit:false};
-const PL=['Daet','Mercedes','Labo','Paracale','Jose Panganiban','Vinzons','Talisay','Basud','San Vicente','Santa Elena','Capalonga'];
-const PROVIDER_TYPES=['Buyer','Trader','Transporter','Ice supplier','Cold storage','Processor','Cooperative','Authorized institution'];
-const PROVIDER_SERVICES=['Buy produce','Buy fish','Transport','Ice','Cold storage','Processing'];
-const CR=[['tilapia','Tilapia'],['bangus','Bangus'],['tuna','Tuna'],['isda|fish|catch|huli','Fish'],['pineapple|pinya','Pineapple'],['kamatis|tomato','Tomato'],['saging|banana','Banana'],['palay|rice','Rice'],['gulay|vegetable','Vegetables']];
-const ND=[['yelo|ice|storage|cold|lamig','Ice'],['transport|truck|sasakyan|hatid|deliver','Transport'],['buyer|bumili|bibili|bilhin|bentahan|market|ibenta|sell','Buyer'],['proces','Processing']];
-const TIPS={fish:[['sun','Keep fish in the shade','Avoid direct sun and heat while waiting.'],['ice','Layer fish with ice','Keep the catch chilled and let melt water drain.'],['box','Do not overload boxes','Heavy stacking bruises and damages fish.'],['drop','Rinse with clean water','Remove dirt and blood. Keep tools and boxes clean.']],farm:[['sun','Harvest in cool hours','Keep harvested produce in the shade.'],['box','Use ventilated crates','Do not overfill or stack too high.'],['leaf','Sort out damaged produce','Separate bruised items so they do not spoil the rest.'],['drop','Keep produce dry','Cover it from rain and keep it off wet ground.']]};
-// Simulated AI: reads Filipino or English text. In production, replace with a language-model API call.
-function interpret(t){const r=S.req,x=t.toLowerCase();let m=x.match(/(\d+(?:[.,]\d+)?)\s*(kg|kilo|kilos|kilogram|kilograms)\b/);
- if(m)r.qty=parseFloat(m[1].replace(',','.'));else if(S.ask==='qty'&&(m=x.match(/^\s*\d+(?:[.,]\d+)?\s*$/)))r.qty=parseFloat(m[0].replace(',','.'));
- PL.forEach(p=>{if(x.includes(p.toLowerCase()))r.loc=p});
- if(S.ask==='loc'&&!r.loc){const place=PL.find(p=>p.toLowerCase()===x.trim());if(place)r.loc=place}
- for(const[k,v]of CR){if(new RegExp(k).test(x)){r.crop=v;break}}
- ND.forEach(([k,v])=>{if(new RegExp(k).test(x)&&!r.needs.includes(v))r.needs.push(v)});
- if(/bukas|tomorrow/.test(x))r.when='Tomorrow';else if(/later this week|sa susunod na mga araw/.test(x))r.when='Later this week';else if(/hapon|afternoon/.test(x))r.when='Today, afternoon';else if(/ngayon|today|now/.test(x))r.when='Today'}
-function nextQ(request=S.req){const r=request;
- if(!r.crop)return['crop','What product do you have? For example tilapia or tomatoes.'];
- if(!r.qty)return['qty','About how many kilos do you have?'];
- if(!r.loc)return['loc','Which Camarines Norte municipality are you in? Use its name, such as Daet or Labo.'];
- if(!r.needs.length)return['needs','What help do you need: buyer, transport, ice or storage, or processing?'];
- if(!r.when)return['when','When do you need it: today or tomorrow?'];return null}
-function send(txt){if(S.req.status!=='DRAFT'){toast('This request is already confirmed. Start a new request after recording the outcome.');return}txt=(txt||'').trim();if(!txt)return;S.draft='';invalidateRequestReview();const before=JSON.stringify([S.req.crop,S.req.qty,S.req.loc,S.req.needs,S.req.when]);S.chat.push({u:1,t:txt});interpret(txt);
- const q=nextQ();S.ask=q?q[0]:'';const same=before===JSON.stringify([S.req.crop,S.req.qty,S.req.loc,S.req.needs,S.req.when]);
- S.chat.push({t:(same?'I did not catch that. ':'')+(q?q[1]:'Got it. Please check the summary below.')});R();const i=$('#in');i&&i.focus()}
-function currentRequest(){return S.requests.find(x=>x.id===S.currentRequestId)||null}
-function findRequest(id){return S.requests.find(x=>x.id===Number(id))||null}
-function recordHistory(request,status,actor,event){const from=request.status,allowed={DRAFT:['CONFIRMED_BY_USER'],CONFIRMED_BY_USER:['SAVED_OFFLINE','SUBMITTED'],SAVED_OFFLINE:['SUBMITTED'],SUBMITTED:['PROVIDER_RESPONDED'],PROVIDER_RESPONDED:['ACCEPTED'],ACCEPTED:['DONE_BY_PROVIDER'],DONE_BY_PROVIDER:['OUTCOME_RECORDED'],OUTCOME_RECORDED:[]};
- if(!allowed[from]||!allowed[from].includes(status)){blocked(`Cannot move this request from ${from} to ${status}. Complete the current step first.`);return false}
- request.status=status;request.history.push({from,status,actor,event,at:Date.now()});return true}
-function blocked(message){toast(message);R();return false}
-function hasHistory(request,status){return request.history.some(item=>item.status===status)}
-function canOpenLaterStage(request,status){return REQUEST_STATUSES.indexOf(request.status)>=REQUEST_STATUSES.indexOf(status)}
-function requiredServices(req,need){if(need==='Buyer')return[req.role==='fish'?'Buy fish':'Buy produce'];if(need==='Transport')return['Transport'];if(need==='Ice')return['Ice','Cold storage'];if(need==='Processing')return['Processing'];return[]}
-function providerMatches(req,profile){return !!(profile&&profile.areas.includes(req.loc)&&req.needs.some(n=>requiredServices(req,n).some(service=>profile.services.includes(service))))}
-function requestTime(req){return new Date(req.receivedAt).toLocaleString()}
-function requestDetailsReady(request=S.req){return !nextQ(request)}
-function photoStageDone(request=S.req){return !!(request.photo||request.journey.photoSkipped)}
-function invalidateRequestReview(request=S.req){request.journey.aiViewed=false;request.journey.aiReviewed=false}
-function confirmRequestByUser(){const request=S.req;if(request.status!=='DRAFT')return blocked('This request is no longer a draft. Start a new request after recording the outcome.');
- if(!request.role)return blocked('Choose Farmer or Fisherfolk before describing the request.');
- const missing=nextQ(request);if(missing)return blocked(`Still missing: ${missing[1]}`);
- if(!photoStageDone(request))return blocked('Add a photo or choose “Continue without a photo” first.');
- if(!request.journey.aiReviewed)return blocked('Review the AI explanation before confirming the summary.');
- recordHistory(request,'CONFIRMED_BY_USER','farmer','summary-confirmed');toast('Request details confirmed. Choose Send or Save on device.');S.scr='summary';R();return true}
-function saveRequestOffline(){const request=S.req;if(S.on)return blocked('You are online. Choose “Send request” instead.');
- if(request.status!=='CONFIRMED_BY_USER')return blocked('Review and confirm the request summary before saving it offline.');
- recordHistory(request,'SAVED_OFFLINE',S.helper?'helper':'farmer','saved-offline');toast('Saved on device · not sent yet');R();return true}
-function submitRequest(){const request=S.req;if(!S.on)return blocked('You are offline. Choose “Save on device”; it will send when you reconnect.');
- if(!['CONFIRMED_BY_USER','SAVED_OFFLINE'].includes(request.status))return blocked('Confirm the request summary first. Then send it or save it on device.');
- if(request.status==='CONFIRMED_BY_USER'&&(!request.journey.aiReviewed||!photoStageDone(request)))return blocked('Complete the AI review and photo choice before sending.');
- const wasSaved=request.status==='SAVED_OFFLINE';if(!request.id){request.id=S.nextRequestId++;request.receivedAt=Date.now();request.submittedAt=request.receivedAt;request.helper=S.helper?{name:S.helperName,relationship:S.helperRelationship,beneficiary:S.beneficiaryName}:null;S.requests.push(request)}
- S.currentRequestId=request.id;recordHistory(request,'SUBMITTED',S.helper?'helper':'farmer',wasSaved?'offline-sync':'sent');request.submittedAt=request.submittedAt||Date.now();S.scr='matches';toast(S.helper?`Request sent for ${S.beneficiaryName}`:'Request sent. Providers were notified.');R();return true}
-function submit(){if(S.req.status==='CONFIRMED_BY_USER'||S.req.status==='SAVED_OFFLINE')return submitRequest();return confirmRequestByUser()}
-function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.T);toast.T=setTimeout(()=>e.style.display='none',2400)}
-function nav(to){if(to!==S.scr){S.hist.push(S.scr);S.scr=to}R();const m=$('.main');m&&(m.scrollTop=S.scr==='chat'?m.scrollHeight:0)}
-const roleName=()=>(S.req.role==='fish'?'Fisherfolk':S.req.role==='farm'?'Farmer':'')+(S.helper?' · Helper':'');
-const net=()=>`<button class="chip" data-a="net" aria-label="Switch online or offline" style="background:#fff;color:${S.on?'#0D3B2C':'#6B4A00'}">${S.on?ic('wifi')+'Online':ic('woff')+'Offline'}</button>`;
-function photoBox(){return S.req.photo?`<div class="row" style="margin-top:10px;gap:12px"><img src="${S.req.photo}" alt="Photo of your product" style="width:64px;height:64px;object-fit:cover;border-radius:12px"><div style="flex:1" class="sm">Not a freshness check.</div><button class="btn o sm2" style="width:auto" data-a="rmphoto">Remove</button></div>`:`<button class="btn o sm2" style="margin-top:10px" data-a="cam">${ic('cam')}Add a photo</button>`}
-function farmerContactFields(){return `<div class="card provider-form"><div class="h">Contact details (optional)</div><label class="field-label" for="farmer-name">Your name</label><input id="farmer-name" autocomplete="name" aria-label="Your name (optional)" placeholder="Your name" value="${esc(S.req.name)}"><label class="field-label" for="farmer-phone" style="display:block;margin-top:10px">Phone number</label><input id="farmer-phone" type="tel" autocomplete="tel" aria-label="Phone number (optional)" placeholder="Phone number" value="${esc(S.req.phone)}"><label class="field-label" for="farmer-address" style="display:block;margin-top:10px">Pickup details or exact address</label><textarea id="farmer-address" aria-label="Pickup details or exact address (optional)" placeholder="Add directions for the provider">${esc(S.req.address)}</textarea><div class="sm" style="margin-top:6px">Providers only see these details after you accept their offer.</div></div>`}
-const crops=()=>S.req.role==='farm'?['Pineapple','Tomato','Banana','Vegetables']:['Tilapia','Bangus','Tuna','Fish'];
-function helperDraftValid(){const d=S.helperDraft;return !!(d.name.trim()&&d.relationship&&d.beneficiary.trim()&&d.permission)}
-function helperError(field){if(!S.helperAttempted)return '';const d=S.helperDraft;
- if(field==='name'&&!d.name.trim())return 'Enter the helper’s full name.';
- if(field==='relationship'&&!d.relationship)return 'Choose a relationship.';
- if(field==='beneficiary'&&!d.beneficiary.trim())return 'Enter the beneficiary’s name.';
- if(field==='permission'&&!d.permission)return 'Confirm that the member gave permission.';
- return ''}
-function helperSetup(){const d=S.helperDraft,valid=helperDraftValid();
- return `<div class="main helper-form"><div class="h" style="margin:0">Set up helper access</div><div class="sm">Enter your details and confirm the member’s permission.</div>
-<div class="form-field"><label class="field-label" for="helper-full-name">Helper full name</label><input id="helper-full-name" name="helperName" autocomplete="name" required value="${esc(d.name)}" aria-describedby="helper-full-name-error" aria-invalid="${!!helperError('name')}"><div class="field-error" id="helper-full-name-error" aria-live="polite">${helperError('name')}</div></div>
-<div class="form-field"><label class="field-label" for="helper-relationship">Relationship to the beneficiary</label><select id="helper-relationship" name="helperRelationship" required aria-describedby="helper-relationship-error" aria-invalid="${!!helperError('relationship')}"><option value="">Choose one</option>${['Relative','Friend','Cooperative representative','Community coordinator'].map(x=>`<option value="${x}"${d.relationship===x?' selected':''}>${x}</option>`).join('')}</select><div class="field-error" id="helper-relationship-error" aria-live="polite">${helperError('relationship')}</div></div>
-<div class="form-field"><label class="field-label" for="beneficiary-name">Farmer or fisherfolk member’s full name</label><input id="beneficiary-name" name="beneficiaryName" autocomplete="off" required value="${esc(d.beneficiary)}" aria-describedby="beneficiary-name-error" aria-invalid="${!!helperError('beneficiary')}"><div class="field-error" id="beneficiary-name-error" aria-live="polite">${helperError('beneficiary')}</div></div>
-<div class="card helper-info"><strong>What helpers can and cannot do</strong><div><b>Can:</b> describe the need, add a photo, submit and track a request, send reminders, and ask providers questions.</div><div style="margin-top:8px"><b>Cannot:</b> accept an offer, agree on a price, or change commercial terms. The member makes every final decision.</div></div>
-<div class="form-field"><label class="row"><input id="helper-permission" type="checkbox" required${d.permission?' checked':''} aria-describedby="helper-permission-error" aria-invalid="${!!helperError('permission')}"><span>The farmer or fisherfolk member allows me to prepare, send, and track this request for them.</span></label><div class="field-error" id="helper-permission-error" aria-live="polite">${helperError('permission')}</div></div>
-<div class="rw"><div class="helper-start-wrap" data-a="helperInvalidAttempt"><button id="start-helper" class="btn g" data-a="startHelper" type="button"${valid?'':' disabled'} aria-disabled="${valid?'false':'true'}" aria-describedby="helper-start-help">Start as helper</button></div><button class="btn o" data-a="cancelHelper" type="button">Cancel</button></div><div class="sm" id="helper-start-help">${valid?'Your details and permission are ready.': 'Complete all required fields and confirm permission to continue.'}</div></div>`}
-function helperBanner(){return S.helper?`<div class="helper-banner" role="status"><span>Helping ${esc(S.beneficiaryName)} · ${esc(S.helperName)}</span><button class="btn" data-a="endHelper">End helper mode</button></div>`:''}
-function acceptSheet(){const r=findRequest(S.acceptProvider),p=r&&r.provider;if(!S.helper||!r||!p||p.status!=='waiting'||p.stale)return '';
- return `<div class="sheet-backdrop" id="accept-backdrop"><section class="accept-sheet" role="dialog" aria-modal="true" aria-labelledby="accept-sheet-title"><div class="sheet-handle" aria-hidden="true"></div><div class="h" id="accept-sheet-title">Provider offer</div><div class="card"><div class="h">${esc(S.providerProfile?S.providerProfile.name:'Provider')}</div><div class="row"><b>Indicative rate:</b>&nbsp;${esc(p.rate)}</div><div class="row" style="margin-top:8px"><b>Ready time:</b>&nbsp;${esc(p.readyTime)}</div></div><p class="sm">Show this to ${esc(S.beneficiaryName)}. They decide.</p><div class="card"><div class="h">Beneficiary confirms</div><div class="sm" style="margin-bottom:10px">Hand the device to ${esc(S.beneficiaryName)}. Only they should choose.</div><button id="beneficiary-accept" class="btn g" style="min-height:64px;font-size:19px" data-a="beneficiaryAccept" data-v="${r.id}">I accept</button><button class="btn o" style="margin-top:8px" data-a="closeAccept">Not now</button></div></section></div>`}
-function endHelperDialog(){return S.endHelperConfirm?`<div class="confirm-backdrop"><section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="end-helper-title"><div class="h" id="end-helper-title">End helper mode?</div><p class="sm">You will leave helper mode for ${esc(S.beneficiaryName)}. Their request will remain unchanged.</p><div class="rw"><button class="btn o" data-a="cancelEndHelper">Keep helping</button><button class="btn t" data-a="confirmEndHelper">End helper mode</button></div></section></div>`:''}
-function home(){return `<div class="hero"><div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:2px">FRESHCISION</b>${net()}</div>${viewSwitch()}<h1>From farm to sea, help reaches you in time.</h1><p>Tell us what you harvested or caught. We find providers who can help.</p><svg class="w" viewBox="0 0 390 50" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25C60 0 120 50 195 25S330 0 390 25V50H0Z" fill="#EEF8F4"/></svg></div>${S.helper?helperBanner():''}${journeyWidget()}
-<div class="main"><div class="h" style="font-size:18px;margin:0">I am a…</div>
-<button class="btn g big" data-a="role" data-v="farm">${ic('leaf')}Farmer</button>
-<button class="btn t big" data-a="role" data-v="fish">${ic('fish')}Fisherfolk</button>
-${S.helper?'':`<button class="btn o" data-a="helperSetup">${ic('people')}Someone is helping me</button>`}
-<button class="btn t provider-entry" data-a="providerEntry">${ic('truck')}I am a provider</button>
-<button class="btn o" data-a="offlineGuided" style="border-color:var(--t)">${ic('woff')}Offline guided mode</button>
-${S.req.status!=='DRAFT'?`<button class="btn o" data-a="resumeRequest">${ic('truck')}Resume current request</button>`:''}
-<div class="sm" style="text-align:center">You decide every step. Providers confirm before anything is final.</div></div>`}
-function summaryRows(request){const rows=[['Role',request.role==='fish'?'Fisherfolk':'Farmer']],helper=request.helper||(S.helper?{name:S.helperName,relationship:S.helperRelationship,beneficiary:S.beneficiaryName}:null);
- if(helper)rows.push(['Requested by',`${helper.name} (${helper.relationship})`],['On behalf of',helper.beneficiary]);
- rows.push(['Product',request.crop],['Quantity',request.qty+' kg'],['Location',request.loc],['Needs',request.needs.join(', ')],['When',request.when]);return rows}
-function summary(){const r=S.req;return `<div class="main"><div class="h" style="margin:0">Check your request</div><div class="card"><div class="kv">${summaryRows(r).map(([a,b])=>`<span>${esc(a)}</span><b>${esc(b)}</b>`).join('')}</div></div>${farmerContactFields()}${r.photo?photoBox():''}
-${r.status==='DRAFT'?`<div class="rw"><button class="btn o" data-a="edit">Edit</button><button class="btn g" data-a="confirmRequest">Confirm</button></div>`:''}
-${r.status==='CONFIRMED_BY_USER'?`<div class="chip sea">Request confirmed by you</div>${S.on?'<button class="btn g" data-a="sendRequest">Send request</button>':'<button class="btn t" data-a="saveOffline">Save on device</button>'}`:''}
-${r.status==='SAVED_OFFLINE'?`<div class="chip wt" role="status">Saved on device · not sent yet</div>${S.on?'<button class="btn g" data-a="sendRequest">Send request now</button>':'<div class="disabled-reason">Switch online to send this request.</div>'}`:''}</div>`}
-function draftReviewActions(){if(!requestDetailsReady())return '';const photoReady=photoStageDone(S.req);return `<div class="card"><div class="h">Optional photo</div>${photoBox()}<button class="btn t" data-a="continueToAi"${photoReady?'':' disabled aria-disabled="true" aria-describedby="photo-choice-help"'}>Continue to AI review</button><button class="btn o" style="margin-top:8px" data-a="skipPhoto">Continue without a photo</button><div class="disabled-reason" id="photo-choice-help">${photoReady?'Your photo choice is saved.':'Add a photo or choose to continue without one.'}</div></div>`}
-function chat(){if(!S.chat.length)S.chat.push({t:`Kumusta! Tell me what happened with your ${S.req.role==='fish'?'catch':'harvest'}. You can type or speak.`});
- return `<div class="main">${S.req.photo&&!requestDetailsReady()?`<div class="card">${photoBox()}</div>`:''}${S.chat.map(m=>`<div class="bb${m.u?' u':''}">${esc(m.t)}</div>`).join('')}${requestDetailsReady()?draftReviewActions():''}</div>
-<div class="bar"><button class="ib t" data-a="mic" aria-label="Speak">${ic('mic')}</button><button class="ib" data-a="cam" aria-label="Add a photo" style="background:#fff;border:2px solid var(--g);color:var(--g)">${ic('cam')}</button><input id="in" aria-label="Type your message" placeholder="Type or speak in Filipino or English" value="${esc(S.draft)}"><button class="ib g" data-a="send" aria-label="Send">${ic('send')}</button></div>
-<div style="padding:0 14px 10px;background:#fff"><button class="btn o sm2" data-a="useGuided">Use buttons instead</button></div>`}
-function guided(){const r=S.req,T=[['Buyer','Find a buyer','buyer'],['Transport','Request transport','truck'],['Ice','Ice or storage','ice'],['Processing','Processing','gear']];
- if(!r.role)return `<div class="main"><div class="h">Choose your role</div><button class="btn g" data-a="role" data-v="farm">Farmer</button><button class="btn t" data-a="role" data-v="fish">Fisherfolk</button></div>`;
- return `<div class="main">${r.photo&&!requestDetailsReady()?`<div class="card">${photoBox()}</div>`:''}<div class="h" style="margin:0">What do you have?</div><div class="rw" style="flex-wrap:wrap">${crops().map(c=>`<button class="btn ${r.crop===c?'g':'o'} sm2" style="width:auto" data-a="crop" data-v="${c}">${c}</button>`).join('')}</div>
-<div class="h" style="margin:0">What help do you need?</div><div class="grid">${T.map(([k,l,i])=>`<button class="tile${r.needs.includes(k)?' sel':''}" data-a="need" data-v="${k}" aria-pressed="${r.needs.includes(k)}">${ic(i)}${l}</button>`).join('')}</div>
-<div class="h" style="margin:0">How much?</div><div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px"><button class="ib" data-a="qty" data-v="-5" aria-label="Less" style="background:#fff;border:2px solid var(--g);color:var(--g)">${ic('minus')}</button><b style="font-size:26px">${r.qty} kg</b><button class="ib g" data-a="qty" data-v="5" aria-label="More">${ic('plus')}</button></div>
-<div class="h" style="margin:0">Where are you?</div><select id="loc" aria-label="Location"><option value="">Choose location</option>${PL.map(p=>`<option${r.loc===p?' selected':''}>${p}</option>`).join('')}</select>
-<div class="h" style="margin:0">When?</div><div class="rw">${[['Today','Today'],['Tomorrow','Tomorrow'],['Later this week','Later this week']].map(([v,l])=>`<button class="btn ${r.when===v?'g':'o'} sm2" data-a="when" data-v="${v}">${l}</button>`).join('')}</div>
-${farmerContactFields()}${requestDetailsReady()?draftReviewActions():'<div class="sm">Complete product, quantity, municipality, service, and timing to continue.</div>'}<button class="btn o sm2" data-a="useChat">Use the assistant instead</button></div>`}
-function matches(){const r=currentRequest();if(!r)return `<div class="main"><div class="card"><div class="h">No submitted request</div><div class="sm">Confirm and send a request before reviewing provider responses.</div><button class="btn g" data-a="resumeRequest">Continue current request</button></div></div>`;
- const p=r.provider,profile=S.providerProfile,matched=providerMatches(r,profile)&&!r.excludedProviderIds.includes(profile.id),accepted=r.status==='ACCEPTED'||r.status==='DONE_BY_PROVIDER'||r.status==='OUTCOME_RECORDED',completed=r.status==='DONE_BY_PROVIDER'||r.status==='OUTCOME_RECORDED';
- if(r.status==='PROVIDER_RESPONDED'&&!(p.status==='declined'&&r.excludedProviderIds.includes(p.providerId)))r.journey.responseReviewed=true;
- const status=p.status==='new'?'<span class="provider-status waiting">Awaiting reply</span>':p.status==='waiting'?'<span class="provider-status confirmed">Confirmed available</span>':p.status==='declined'?'<span class="provider-status declined">Declined</span>':p.status==='confirmed'?`<span class="provider-status confirmed">${p.acceptedBy?`Accepted by ${esc(p.acceptedBy)}${p.acceptedWith?` with ${esc(p.acceptedWith)}'s help`:''}`:'Accepted'}</span>`:'<span class="provider-status confirmed">Completed</span>';
- return `<div class="main"><div class="sm">${r.qty} kg ${esc(r.crop)} · ${esc(r.loc)}.${accepted?' Contact details were shared with the accepting provider.':' Your municipality is shared with matching providers. Contact details remain private until you accept.'}</div>
-${matched?`<div class="card"><div class="row"><div style="flex:1"><div class="h" style="margin:0">${esc(profile.name)}</div><div class="sm">${esc(profile.type)}</div></div>${status}</div>
-${p.status==='waiting'?`<div style="font-size:14px;margin:10px 0">${esc(p.rate)} · Ready ${esc(p.readyTime)}</div>${p.note?`<div class="sm">${esc(p.note)}</div>`:''}${S.helper?`<div class="rw" style="margin-top:10px"><div class="disabled-accept-wrap" data-a="accept" data-v="${r.id}" role="group" aria-label="Offer acceptance is reserved for the beneficiary"><button class="btn g" disabled aria-disabled="true" aria-describedby="accept-reason">Only ${esc(S.beneficiaryName)} can accept</button></div><span class="disabled-reason" id="accept-reason">Only ${esc(S.beneficiaryName)} can accept offers.</span></div><button class="btn t" style="margin-top:8px" data-a="askAccept" data-v="${r.id}">Ask ${esc(S.beneficiaryName)} to accept</button>`:`<button class="btn g" style="margin-top:10px" data-a="accept" data-v="${r.id}">Accept</button>`}`:''}
-${p.status==='declined'?`<div class="sm" style="margin-top:10px">Declined: ${esc(p.declineReason)}</div><button class="btn t" data-a="findAnother" data-v="${r.id}">Find another provider</button>`:''}
-${p.question?`<div class="card provider-panel" style="margin-top:12px"><div class="h">Provider question</div><div>${esc(p.question)}</div>${p.farmerReply?`<div class="sm" style="margin-top:8px">Your reply: ${esc(p.farmerReply)}</div>`:'<button class="btn o" style="margin-top:8px" data-a="openFarmerReply">Reply</button>'}</div>`:''}
-${p.conditions?`<div class="card provider-panel" style="margin-top:12px"><div class="h">Provider conditions</div><div>${esc(p.conditions)}</div>${p.farmerReply?'':`<button class="btn o" style="margin-top:8px" data-a="openFarmerReply">Reply</button>`}</div>`:''}
-${p.status==='done'?`<div class="sm" style="margin-top:8px">Completed · ${esc(p.doneKg)} kg handled</div>`:''}
-${['new','waiting'].includes(p.status)?`<div class="rw" style="margin-top:10px"><button class="btn o" data-a="ask">Ask a question</button><button class="btn o" data-a="remind">Send reminder</button></div>`:''}</div>`:'<div class="card"><div class="h">No other matching provider profile yet</div><div class="sm">Your request details are unchanged. Try again when a provider covers this area and service.</div></div>'}
-<div class="card"><div class="h">Progress</div><div class="rw">${[['Submitted',hasHistory(r,'SUBMITTED')],['Provider responded',hasHistory(r,'PROVIDER_RESPONDED')],['Accepted',hasHistory(r,'ACCEPTED')],['Completed',hasHistory(r,'DONE_BY_PROVIDER')]].map(([l,d],i)=>`<div class="step ${d?'d':i===0?'c':''}"><i>${d?ic('check'):i+1}</i>${l}</div>`).join('')}</div></div>
-<button class="btn o" data-a="go" data-v="ai">${ic('spark')}Why these matches? (AI)</button><button class="btn t" data-a="go" data-v="outcome">${ic('check')}Record outcome</button></div>`}
-function matchedServices(request,profile){return request.needs.flatMap(need=>requiredServices(request,need).filter(service=>profile.services.includes(service)))}
-function availabilityReason(request,profile){const p=request.provider;if(p.providerId!==profile.id)return 'Suggested only · this provider has not responded.';if(p.status==='waiting')return `Confirmed available · ready ${esc(p.readyTime)} at indicative rate ${esc(p.rate)}.`;if(p.status==='declined')return `Declined: ${esc(p.declineReason)}.`;if(p.status==='confirmed'||p.status==='done')return 'Accepted by the farmer; the provider is completing the service.';return 'Suggested only · availability is not confirmed until the provider responds.'}
-function ai(){const r=S.req,has=requestDetailsReady(r),profiles=S.providerProfiles.filter(profile=>providerMatches(r,profile)&&!r.excludedProviderIds.includes(profile.id));if(r.status==='DRAFT'&&has&&photoStageDone(r))r.journey.aiViewed=true;
- return `<div class="main"><div class="card"><div class="h">What the AI understood</div>${has?`<div class="rw" style="flex-wrap:wrap;gap:8px">${[r.crop,r.qty+' kg',r.loc,...r.needs,r.when].map(x=>`<span class="chip sea">${esc(x)}</span>`).join('')}</div>`:'<div class="sm">Some request details are still missing. Go back and answer the next question.</div>'}<div class="sm" style="margin-top:10px">I only use details you gave. AI never guesses missing information.</div></div>
-<div class="card"><div class="h">Why these providers were suggested</div><div class="sm">A match is a suggestion, not confirmed availability.</div>${profiles.length?profiles.map(profile=>`<div class="provider-panel card" style="margin-top:10px"><b>${esc(profile.name)}</b><div class="sm">Service: ${matchedServices(r,profile).map(esc).join(', ')}</div><div class="sm">Coverage: ${esc(r.loc)} is in this provider’s area.</div><div class="sm">Availability: ${availabilityReason(r,profile)}</div></div>`).join(''):'<div class="sm" style="margin-top:10px">No provider profile matches both this service and municipality yet.</div>'}</div>
-${r.status==='DRAFT'?`<button class="btn g" data-a="continueToSummary"${has&&photoStageDone(r)?'':' disabled aria-disabled="true" aria-describedby="ai-next-help"'}>Continue to request summary</button><div class="disabled-reason" id="ai-next-help">${has?'Choose a photo or continue without one before reviewing the summary.':'Complete all request details before continuing.'}</div>`:`<button class="btn o" data-a="go" data-v="matches">Back to responses</button>`}
-<div class="sm" style="text-align:center">In this prototype, request understanding uses simple rules in your browser.</div></div>`}
-function tips(){const k=S.tr||S.req.role||'fish',L=TIPS[k],n=L.filter((_,i)=>S.tips[k+i]).length;
- return `<div class="main"><div class="rw"><button class="btn ${k==='fish'?'g':'o'} sm2" data-a="tr" data-v="fish">Fisherfolk</button><button class="btn ${k==='farm'?'g':'o'} sm2" data-a="tr" data-v="farm">Farmer</button></div><span class="chip wt" style="align-self:flex-start">Sample reminders · expert review needed</span><div class="sm">${n} of ${L.length} done</div>
-${L.map(([i,a,b],j)=>`<div class="card row" style="padding:12px 14px;gap:12px"><div class="ib ok" style="width:44px;height:44px">${ic(i)}</div><div style="flex:1"><b style="font-size:15px">${a}</b><div class="sm">${b}</div></div><button class="btn ${S.tips[k+j]?'t':'g'} sm2" style="width:auto" data-a="tip" data-v="${k+j}" aria-pressed="${!!S.tips[k+j]}">${S.tips[k+j]?'✓ Done':'Done'}</button></div>`).join('')}
-<button class="btn g" data-a="req">${ic('truck')}Need ice or transport now?</button><div class="sm" style="text-align:center">General reminders only. Not food-safety advice or a freshness check.</div></div>`}
-function sessionSummary(){const count=S.requests.length,responded=S.requests.filter(r=>r.responseTimeMs!==null),avg=responded.length?Math.round(responded.reduce((sum,r)=>sum+r.responseTimeMs,0)/responded.length/60000):null,latest=S.requests[S.requests.length-1],kilos=S.requests.filter(r=>r.status==='OUTCOME_RECORDED').reduce((sum,r)=>sum+(Number(r.outcomeKg)||0),0);
- return `<div class="card"><div class="h">Sample data from this session only</div><div class="kv"><span>Request count</span><b>${count}</b><span>Average response time</span><b>${avg===null?'No provider response yet':`${avg} minutes`}</b><span>Latest completion</span><b>${latest?esc(latest.outcome||'Not recorded'):'Not recorded'}</b><span>Kilos sold or saved</span><b>${kilos} kg</b></div></div>`}
-function outcome(){const r=S.req;if(r.status==='OUTCOME_RECORDED'&&!S.outcomeEdit)return `<div class="main"><div class="card"><div class="h">Outcome saved</div><div class="sm">Result: ${esc(r.outcome)} · ${esc(r.outcomeKg)} kg sold or saved.</div></div>${sessionSummary()}${r.journey.learned?`<button class="btn g" data-a="newRequest">Start a new request</button>`:`<button class="btn t" data-a="reviewLearning">Done reviewing</button>`}${S.outcomeEdit?'<button class="btn o" data-a="editOutcome">Edit outcome</button>':''}</div>`;
- if(r.status!=='DONE_BY_PROVIDER'&&!(r.status==='OUTCOME_RECORDED'&&S.outcomeEdit))return `<div class="main"><div class="card"><div class="h">Record outcome is locked</div><div class="sm">The provider must mark the accepted service as done first.</div><button class="btn o" data-a="go" data-v="matches">Back to request</button></div></div>`;
- return `<div class="main"><div class="h" style="margin:0">What happened?</div>${['Completed','Partly completed','Not completed'].map(v=>`<button class="btn ${r.outcome===v?'g':'o'}" data-a="res" data-v="${v}" aria-pressed="${r.outcome===v}">${v}</button>`).join('')}<div class="h" style="margin:0">Kilos sold or saved</div><input id="kg" type="number" min="0" inputmode="numeric" required aria-label="Kilos sold or saved" style="height:48px;border:2px solid var(--l);border-radius:14px;padding:0 14px;font-size:16px" placeholder="0" value="${esc(r.outcomeKg)}"><button class="btn t" data-a="saveout">${ic('check')}Save outcome</button></div>`}
-const JOURNEY_GROUPS=[['Farmer',[1,2,3,4,5,6]],['Provider',[7,8,9]],['Back to farmer',[10,11,12,13,14,15]]];
-const JOURNEY_TITLES=['Choose role and helper','Describe the need','Add an optional photo','Review AI understanding and suggestions','Confirm the request summary','Send or save the request','Create provider profile','Review matching inbox','Respond to the request','Review provider responses','Decide whether to accept','Share contact with the accepting provider','Complete the service','Record the outcome','Review session learning'];
-function journeyDone(step,request=S.req){switch(step){
- case 1:return !!(request.role&&(!S.helper||S.helperPermission));
- case 2:return requestDetailsReady(request);
- case 3:return photoStageDone(request);
- case 4:return request.journey.aiReviewed;
- case 5:return hasHistory(request,'CONFIRMED_BY_USER');
- case 6:return hasHistory(request,'SAVED_OFFLINE')||hasHistory(request,'SUBMITTED');
- case 7:return !!S.providerProfile&&journeyDone(6,request);
- case 8:return request.journey.inboxViewed;
- case 9:return request.journey.providerResponded;
- case 10:return request.journey.responseReviewed;
- case 11:return hasHistory(request,'ACCEPTED');
- case 12:return request.journey.contactViewed;
- case 13:return hasHistory(request,'DONE_BY_PROVIDER');
- case 14:return hasHistory(request,'OUTCOME_RECORDED');
- case 15:return request.journey.learned;
- default:return false}}
-function journeyCurrent(){for(let step=1;step<=15;step++)if(!journeyDone(step))return step;return 16}
-function journeyStepStatus(step){if(journeyDone(step))return 'Done';if(step===11&&(S.req.status!=='PROVIDER_RESPONDED'||S.req.provider.status!=='waiting'))return 'Locked';return step===journeyCurrent()?'Current':'Locked'}
-function journeyLockMessage(step){const current=journeyCurrent();if(step===11&&(S.req.status!=='PROVIDER_RESPONDED'||S.req.provider.status!=='waiting'))return 'Step 11 is locked. Wait for a provider to confirm availability first.';
- return current===16?`Step ${step} is already complete.`:`Step ${step} is locked. Complete Step ${current}: ${JOURNEY_TITLES[current-1]} first.`}
-function journeyWidget(){return `<div class="journey-shell"><button class="journey-trigger" data-a="toggleJourney" aria-expanded="${S.journeyOpen}">Journey</button>${S.journeyOpen?`<div class="journey-panel">${JOURNEY_GROUPS.map(([group,steps])=>`<section><b>${group}</b>${steps.map(step=>{const state=journeyStepStatus(step);return `<button class="journey-step ${state.toLowerCase()}" data-a="journeyItem" data-v="${step}" aria-disabled="${state==='Locked'}"><span>Step ${step}: ${JOURNEY_TITLES[step-1]}</span><b>${state}</b></button>`}).join('')}</section>`).join('')}</div>`:''}</div>`}
-function providerProfileValid(){const d=S.providerDraft;return !!(d.name.trim()&&d.type&&d.services.length&&d.areas.length)}
-function providerProfileError(field){if(!S.providerProfileAttempted)return '';const d=S.providerDraft;
- if(field==='name'&&!d.name.trim())return 'Enter a provider name.';
- if(field==='type'&&!d.type)return 'Choose a provider type.';
- if(field==='services'&&!d.services.length)return 'Choose at least one service.';
- if(field==='areas'&&!d.areas.length)return 'Choose at least one coverage area.';
- return ''}
-function updateProviderProfileState(){if(S.scr!=='providerProfile')return;const valid=providerProfileValid(),button=$('#save-provider-profile'),help=$('#provider-profile-help');
- if(button){button.disabled=!valid;button.setAttribute('aria-disabled',String(!valid))}
- if(help)help.textContent=valid?'Required profile details are ready.':'Add a name, type, at least one service, and one coverage area.';
- if(S.providerProfileAttempted){[['name','provider-name'],['type','provider-type'],['services','provider-services'],['areas','provider-areas']].forEach(([field,id])=>{const error=$('#'+id+'-error'),input=$('#'+id);if(error)error.textContent=providerProfileError(field);if(input)input.setAttribute('aria-invalid',String(!!providerProfileError(field)))})}}
-function providerProfileScreen(){const d=S.providerDraft,valid=providerProfileValid();
- return `<div class="provider-topline">Provider view</div><div class="main provider-form"><div class="h" style="margin:0">${S.providerProfile?'Edit provider profile':'Create provider profile'}</div><div class="sm">Only requests matching your services and coverage area will appear.</div>
-<div class="form-field"><label class="field-label" for="provider-name">Provider name</label><input id="provider-name" required aria-describedby="provider-name-error" aria-invalid="${!!providerProfileError('name')}" value="${esc(d.name)}"><div class="field-error" id="provider-name-error">${providerProfileError('name')}</div></div>
-<div class="form-field"><label class="field-label" for="provider-type">Provider type</label><select id="provider-type" required aria-describedby="provider-type-error" aria-invalid="${!!providerProfileError('type')}"><option value="">Choose provider type</option>${PROVIDER_TYPES.map(x=>`<option value="${x}"${d.type===x?' selected':''}>${x}</option>`).join('')}</select><div class="field-error" id="provider-type-error">${providerProfileError('type')}</div></div>
-<div class="form-field"><div class="field-label">Services offered</div><div class="provider-chips" id="provider-services" aria-invalid="${!!providerProfileError('services')}">${PROVIDER_SERVICES.map(x=>`<button type="button" class="provider-chip" data-a="toggleProviderService" data-v="${x}" aria-pressed="${d.services.includes(x)}">${x}</button>`).join('')}</div><div class="field-error" id="provider-services-error">${providerProfileError('services')}</div></div>
-<div class="form-field"><div class="field-label">Coverage area</div><div class="provider-chips" id="provider-areas" aria-invalid="${!!providerProfileError('areas')}">${PL.map(x=>`<button type="button" class="provider-chip" data-a="toggleProviderArea" data-v="${x}" aria-pressed="${d.areas.includes(x)}">${x}</button>`).join('')}</div><div class="field-error" id="provider-areas-error">${providerProfileError('areas')}</div></div>
-<div class="form-field"><label class="field-label" for="provider-capacity">Capacity in kg per day (optional)</label><input id="provider-capacity" type="number" min="0" inputmode="numeric" placeholder="e.g. 200" value="${esc(d.capacity)}"></div>
-<div class="form-field"><label class="field-label" for="provider-schedule">Available schedule (optional)</label><select id="provider-schedule"><option value="">Choose schedule</option>${['Mornings','Afternoons','Daily'].map(x=>`<option value="${x}"${d.schedule===x?' selected':''}>${x}</option>`).join('')}</select></div>
-<div class="form-field"><label class="field-label" for="provider-conditions">Conditions (optional)</label><textarea id="provider-conditions" placeholder="For example: minimum quantity">${esc(d.conditions)}</textarea></div>
-<div class="form-field"><label class="field-label" for="provider-rate">Indicative rate (optional)</label><input id="provider-rate" placeholder="[Indicative rate]" value="${esc(d.rate)}"></div>
-<div class="form-field"><label class="field-label" for="provider-phone">Contact number (optional)</label><input id="provider-phone" type="tel" autocomplete="tel" value="${esc(d.phone)}"></div>
-<div class="card sm">Rates are indicative. Final terms are agreed directly with the farmer or fisherfolk member.</div>
-<div class="rw"><div class="helper-start-wrap" data-a="invalidProviderProfile"><button id="save-provider-profile" class="btn t" data-a="saveProviderProfile" type="button"${valid?'':' disabled'} aria-disabled="${valid?'false':'true'}" aria-describedby="provider-profile-help">Save profile</button></div><button class="btn o" data-a="cancelProviderProfile" type="button">Cancel</button></div><div class="sm" id="provider-profile-help">${valid?'Required profile details are ready.':'Add a name, type, at least one service, and one coverage area.'}</div></div>`}
-function viewSwitch(){return `<div class="view-switch" role="group" aria-label="Switch app view"><button data-a="switchView" data-v="farmer" class="${S.view==='farmer'?'on':''}" aria-pressed="${S.view==='farmer'}">Farmer view</button><button data-a="switchView" data-v="provider" class="${S.view==='provider'?'on':''}" aria-pressed="${S.view==='provider'}">Provider view</button></div>`}
-function providerRequests(){return S.requests.filter(r=>['SUBMITTED','PROVIDER_RESPONDED','ACCEPTED','DONE_BY_PROVIDER','OUTCOME_RECORDED'].includes(r.status)&&providerMatches(r,S.providerProfile)&&!r.excludedProviderIds.includes(S.providerProfile.id)).sort((a,b)=>a.receivedAt-b.receivedAt||a.id-b.id)}
-function providerTabKey(r){return r.provider.status==='declined'||r.provider.status==='done'?'done':r.provider.status}
-function providerStatusLabel(r){return({new:'New request',waiting:'Waiting for farmer',confirmed:'Confirmed by farmer',declined:'Declined',done:'Done'})[r.provider.status]||'New request'}
-function providerStatusClass(r){return r.provider.status==='waiting'?'waiting':r.provider.status==='declined'?'declined':r.provider.status==='new'?'new':'confirmed'}
-function queuedFor(r){return S.providerQueue.some(q=>q.requestId===r.id)}
-function providerInbox(){if(!S.providerProfile)return providerProfileScreen();const all=providerRequests(),tabs=[['new','New'],['waiting','Waiting for farmer'],['confirmed','Confirmed'],['done','Done']],counts={new:0,waiting:0,confirmed:0,done:0};
- const current=currentRequest();if(current&&current.status==='SUBMITTED'&&providerMatches(current,S.providerProfile)&&!current.excludedProviderIds.includes(S.providerProfile.id))current.journey.inboxViewed=true;
- all.forEach(r=>counts[providerTabKey(r)]++);const shown=all.filter(r=>providerTabKey(r)===S.providerTab);
- return `<div class="provider-topline">Provider view</div><div class="main"><div class="rw" style="align-items:center"><div style="flex:1"><div class="h" style="margin:0">${esc(S.providerProfile.name)}</div><div class="sm">${esc(S.providerProfile.type)} · ${S.providerProfile.areas.map(esc).join(', ')}</div></div><button class="btn o" style="width:auto" data-a="editProviderProfile">Edit profile</button></div>
-${S.req.status==='SAVED_OFFLINE'?'<div class="chip wt">Saved on device · not sent yet. Go online to send it to providers.</div>':''}
-<div class="provider-tabs" role="tablist" aria-label="Provider requests">${tabs.map(([id,label])=>`<button role="tab" aria-selected="${S.providerTab===id}" class="${S.providerTab===id?'on':''}" data-a="providerTab" data-v="${id}">${label} · ${counts[id]}</button>`).join('')}</div>
-${shown.length?shown.map(r=>`<button class="card provider-card" data-a="openProviderRequest" data-v="${r.id}" aria-label="Open ${esc(r.crop)} request from ${esc(r.loc)}"><div class="row"><div style="flex:1"><div class="h" style="margin:0">${esc(r.crop)} · ${esc(r.qty)} kg</div><div class="sm">${esc(r.loc)} · ${esc(r.when)}</div></div><span class="provider-status ${providerStatusClass(r)}">${providerStatusLabel(r)}</span></div><div class="sm" style="margin-top:8px">Services needed: ${r.needs.map(esc).join(', ')}</div><div class="sm">Received: ${esc(requestTime(r))}</div>${r.helper?`<div class="sm">Sent by ${esc(r.helper.name)} for ${esc(r.helper.beneficiary)}</div>`:''}${r.photo?`<div class="row" style="margin-top:8px"><img class="photo-thumb" src="${r.photo}" alt="Farmer's product photo"><span class="sm">Photo is not a freshness check.</span></div>`:''}${queuedFor(r)?'<div class="chip wt" style="margin-top:8px">Saved on device · not sent yet</div>':''}</button>`).join(''):`<div class="card sm">${S.providerTab==='new'?'No new requests. Requests that match your services and area will appear here.':'No requests in this tab yet.'}</div>`}</div>`}
-function providerActionForm(r){if(!S.providerAction||S.providerActionRequestId!==r.id)return '';const d=S.providerActionDraft;
- if(S.providerAction==='confirm')return `<div class="card provider-form"><div class="h">Confirm availability</div><div class="form-field"><label class="field-label" for="provider-ready-time">Ready time</label><input id="provider-ready-time" required placeholder="e.g. Today, 3 PM" value="${esc(d.readyTime)}"><div class="field-error">${S.providerActionAttempted&&!d.readyTime.trim()?'Enter a ready time.':''}</div></div><div class="form-field"><label class="field-label" for="provider-action-rate">Indicative rate</label><input id="provider-action-rate" required placeholder="[Indicative rate]" value="${esc(d.rate)}"><div class="field-error">${S.providerActionAttempted&&!d.rate.trim()?'Enter an indicative rate.':''}</div></div><div class="form-field"><label class="field-label" for="provider-action-note">Optional note</label><textarea id="provider-action-note" placeholder="Add a short note">${esc(d.note)}</textarea></div><div class="sm">Rates are indicative. The farmer decides whether to accept.</div><button class="btn t" data-a="sendProviderAction">Confirm availability</button><button class="btn o" style="margin-top:8px" data-a="cancelProviderAction">Cancel</button></div>`;
- if(S.providerAction==='decline')return `<div class="card"><div class="h">Why are you declining?</div><div class="provider-chips">${['No capacity','Outside area','Not my service','Product not suitable','Other'].map(x=>`<button class="provider-chip" data-a="declineReason" data-v="${x}" aria-pressed="${d.reason===x}">${x}</button>`).join('')}</div><div class="field-error" id="provider-action-error">${S.providerActionAttempted&&!d.reason?'Choose a reason.':''}</div><button class="btn t" data-a="sendProviderAction">Send decline</button><button class="btn o" style="margin-top:8px" data-a="cancelProviderAction">Cancel</button></div>`;
- if(S.providerAction==='question')return `<div class="card provider-form"><label class="field-label" for="provider-question">Question for the farmer</label><textarea id="provider-question" placeholder="Ask for clarification">${esc(d.question)}</textarea><div class="field-error" id="provider-action-error">${S.providerActionAttempted&&!d.question.trim()?'Enter a question.':''}</div><button class="btn t" data-a="sendProviderAction">Send question</button><button class="btn o" style="margin-top:8px" data-a="cancelProviderAction">Cancel</button></div>`;
- if(S.providerAction==='conditions')return `<div class="card provider-form"><label class="field-label" for="provider-conditions-text">Conditions</label><textarea id="provider-conditions-text" placeholder="For example: Minimum 40 kg">${esc(d.conditions)}</textarea><div class="field-error" id="provider-action-error">${S.providerActionAttempted&&!d.conditions.trim()?'Enter your conditions.':''}</div><button class="btn t" data-a="sendProviderAction">Send conditions</button><button class="btn o" style="margin-top:8px" data-a="cancelProviderAction">Cancel</button></div>`;
- return `<div class="card provider-form"><label class="field-label" for="provider-done-kg">Quantity handled (kg)</label><input id="provider-done-kg" type="number" min="0" required inputmode="numeric" placeholder="0" value="${esc(d.doneKg)}"><div class="field-error" id="provider-action-error">${S.providerActionAttempted&&!d.doneKg?'Enter the quantity handled.':''}</div><button class="btn t" data-a="sendProviderAction">Mark as done</button><button class="btn o" style="margin-top:8px" data-a="cancelProviderAction">Cancel</button></div>`}
-function providerDetail(){const r=findRequest(S.providerRequestId);if(!r)return `<div class="provider-topline">Provider view</div><div class="main"><div class="card">Request not found.</div></div>`;
- if(!['SUBMITTED','PROVIDER_RESPONDED','ACCEPTED','DONE_BY_PROVIDER','OUTCOME_RECORDED'].includes(r.status))return `<div class="provider-topline">Provider view</div><div class="main"><div class="card"><div class="h">This request is not available yet</div><div class="sm">The farmer must confirm and send it first.</div></div></div>`;
- const p=r.provider,accepted=['ACCEPTED','DONE_BY_PROVIDER','OUTCOME_RECORDED'].includes(r.status)&&r.acceptedProviderId===S.providerProfile?.id,canRespond=['SUBMITTED','PROVIDER_RESPONDED'].includes(r.status)&&!['declined','confirmed','done'].includes(p.status),canDone=r.status==='ACCEPTED'&&p.status==='confirmed'&&p.providerId===S.providerProfile?.id;
- if(accepted)r.journey.contactViewed=true;
- return `<div class="provider-topline">Provider view</div><div class="main"><span class="provider-status ${providerStatusClass(r)}">${providerStatusLabel(r)}</span><div class="card"><div class="h">${esc(r.crop)} · ${esc(r.qty)} kg</div><div class="kv"><span>Role</span><b>${r.role==='fish'?'Fisherfolk':'Farmer'}</b><span>Municipality</span><b>${esc(r.loc)}</b><span>Services needed</span><b>${r.needs.map(esc).join(', ')}</b><span>When</span><b>${esc(r.when)}</b><span>Received</span><b>${esc(requestTime(r))}</b></div>${r.helper?`<div class="sm" style="margin-top:10px">Sent by ${esc(r.helper.name)} for ${esc(r.helper.beneficiary)}</div>`:''}${r.photo?`<div style="margin-top:12px"><img class="photo-thumb" src="${r.photo}" alt="Farmer's product photo"><div class="sm">Not a freshness check.</div></div>`:''}${accepted?`<div class="card provider-panel" style="margin-top:12px"><div class="h">Farmer contact details</div><div class="sm">Name: ${esc(r.helper?r.helper.beneficiary:r.name||(r.role==='fish'?'Fisherfolk member':'Farmer'))}</div><div class="sm">Phone: ${esc(r.phone||'Not provided')}</div><div class="sm">Pickup details: ${esc(r.address||'Not provided')}</div></div>`:'<div class="sm" style="margin-top:10px">Phone and exact pickup details stay hidden until the farmer accepts.</div>'}</div>
-${p.question?`<div class="card"><div class="h">Question sent to farmer</div><div>${esc(p.question)}</div>${p.farmerReply?`<div class="sm" style="margin-top:8px">Farmer reply: ${esc(p.farmerReply)}</div>`:''}</div>`:''}${p.conditions?`<div class="card"><div class="h">Conditions sent</div><div>${esc(p.conditions)}</div></div>`:''}
-${queuedFor(r)?'<div class="chip wt">Saved on device · not sent yet</div>':''}
-${canRespond?`<div class="provider-actions"><button class="btn t" data-a="providerForm" data-v="confirm">${p.status==='waiting'?'Update availability':'Confirm'}</button><button class="btn o" data-a="providerForm" data-v="decline">Decline</button><button class="btn o" data-a="providerForm" data-v="question">Ask a question</button><button class="btn o" data-a="providerForm" data-v="conditions">Add conditions</button></div>`:''}
-${canDone?'<button class="btn t" data-a="providerForm" data-v="done">Mark as done</button>':''}${providerActionForm(r)}</div>`}
-function farmerReplySheet(){if(!S.farmerReplyOpen)return '';const r=currentRequest();if(!r)return '';return `<div class="sheet-backdrop" id="reply-backdrop"><section class="accept-sheet provider-form" role="dialog" aria-modal="true" aria-labelledby="farmer-reply-title"><div class="sheet-handle" aria-hidden="true"></div><div class="h" id="farmer-reply-title">Reply to provider</div><label class="field-label" for="farmer-reply">Your reply</label><textarea id="farmer-reply" placeholder="Write a short reply">${esc(S.farmerReplyText)}</textarea><button class="btn t" style="margin-top:10px" data-a="sendFarmerReply">Send reply</button><button class="btn o" style="margin-top:8px" data-a="closeFarmerReply">Cancel</button></section></div>`}
-function providerActionMessage(action,request){const farmer=request.helper?request.helper.beneficiary:request.name||(request.role==='fish'?'Fisherfolk member':'Farmer');
- return action==='confirm'?`Confirmed. ${farmer} can now accept.`:action==='decline'?'Decline sent.':action==='question'?'Question sent.':action==='conditions'?'Conditions sent.':action==='done'?'Marked as done.':'Reply sent.'}
-function providerRespond(request,action,payload){if(!request||!S.providerProfile)return blocked('Open a matching provider request before responding.');
- if(!providerMatches(request,S.providerProfile))return blocked('This request does not match your services and coverage area.');
- if(!['confirm','decline','question','conditions'].includes(action))return blocked('Choose Confirm, Decline, Ask a question, or Add conditions.');
- if(!['SUBMITTED','PROVIDER_RESPONDED'].includes(request.status))return blocked('The farmer must send the request before you can respond.');
- if(['declined','confirmed','done'].includes(request.provider.status))return blocked('This provider has already finished responding to this request.');
- if(action==='confirm'&&(!payload.readyTime||!payload.rate))return blocked('Enter a ready time and indicative rate before confirming.');
- if(action==='decline'&&!payload.reason)return blocked('Choose a decline reason before sending.');
- if(action==='question'&&!payload.question)return blocked('Enter a question before sending.');
- if(action==='conditions'&&!payload.conditions)return blocked('Enter conditions before sending.');
- const requestStatus=request.status,provider=request.provider;provider.providerId=S.providerProfile.id;
- if(action==='confirm'){provider.status='waiting';provider.readyTime=payload.readyTime;provider.rate=payload.rate;provider.note=payload.note||'';provider.confirmedAt=Date.now()}
- if(action==='decline'){provider.status='declined';provider.declineReason=payload.reason;provider.declinedAt=Date.now()}
- if(action==='question')provider.question=payload.question;
- if(action==='conditions')provider.conditions=payload.conditions;
- if(requestStatus==='SUBMITTED'){request.responseTimeMs=Math.max(0,Date.now()-request.submittedAt);recordHistory(request,'PROVIDER_RESPONDED','provider',`provider-${action}`)}
- else request.history.push({from:request.status,status:request.status,actor:'provider',event:`provider-${action}`,at:Date.now()});
- request.journey.providerResponded=true;S.providerAction='';S.providerActionRequestId=null;S.providerActionAttempted=false;toast(providerActionMessage(action,request));R();return true}
-function acceptRequest(requestId,beneficiaryConfirmed=false){const request=findRequest(requestId);if(!request)return blocked('No request is selected. Open the request from Matches first.');
- if(request.status!=='PROVIDER_RESPONDED'||request.provider.status!=='waiting')return blocked('Wait until a provider confirms availability before accepting.');
- if(S.helper&&!beneficiaryConfirmed)return blocked(`Only ${S.beneficiaryName} can accept offers. Ask them to use “I accept” in the offer sheet.`);
- if(S.helper&&(S.acceptProvider!==request.id||!beneficiaryConfirmed))return blocked(`Only ${S.beneficiaryName} can accept through the open offer sheet.`);
- if(!S.helper&&beneficiaryConfirmed)return blocked('Only the farmer or fisherfolk member can accept directly.');
- request.status='ACCEPTED';request.history.push({from:'PROVIDER_RESPONDED',status:'ACCEPTED',actor:S.helper?'beneficiary':'farmer',event:'offer-accepted',at:Date.now()});request.provider.status='confirmed';request.provider.acceptedAt=Date.now();request.provider.acceptedBy=S.helper?S.beneficiaryName:request.name||(request.role==='fish'?'Fisherfolk member':'Farmer');request.provider.acceptedWith=S.helper?S.helperName:'';request.acceptedProviderId=request.provider.providerId;request.journey.contactViewed=false;S.acceptProvider=null;toast(S.helper?`Accepted by ${S.beneficiaryName} with ${S.helperName}'s help`:'Offer accepted. Contact details are shared with the provider.');R();return true}
-function markRequestDone(request,quantity){if(!request||request.status!=='ACCEPTED'||request.provider.providerId!==S.providerProfile?.id)return blocked('Only the accepting provider can mark this request done after the farmer accepts.');
- if(!Number.isFinite(Number(quantity))||Number(quantity)<0||String(quantity).trim()==='')return blocked('Enter the quantity handled in kilograms. Zero is allowed.');
- request.provider.status='done';request.provider.doneKg=String(quantity);request.doneKg=String(quantity);request.outcomeKg=String(quantity);recordHistory(request,'DONE_BY_PROVIDER','provider','service-done');toast('Marked as done.');S.providerAction='';S.providerActionRequestId=null;S.providerActionAttempted=false;R();return true}
-function recordRequestOutcome(){const request=S.req;if(request.status!=='DONE_BY_PROVIDER'&&!(request.status==='OUTCOME_RECORDED'&&S.outcomeEdit))return blocked('The provider must mark the accepted service done before you record an outcome.');
- if(!['Completed','Partly completed','Not completed'].includes(request.outcome))return blocked('Choose Completed, Partly completed, or Not completed.');
- if(request.outcomeKg===''||!Number.isFinite(Number(request.outcomeKg))||Number(request.outcomeKg)<0)return blocked('Enter kilos sold or saved. Enter 0 if none were sold or saved.');
- if(request.status==='DONE_BY_PROVIDER')recordHistory(request,'OUTCOME_RECORDED','farmer','outcome-recorded');
- else request.history.push({from:request.status,status:request.status,actor:'farmer',event:'outcome-updated',at:Date.now()});
- request.journey.learned=false;S.outcomeEdit=false;toast('Outcome recorded. Review the session summary.');S.scr='outcome';R();return true}
-function applyProviderAction(requestId,action,payload,providerId){const request=findRequest(requestId);if(!request)return blocked('The queued request is no longer available.');
- if(providerId&&(!S.providerProfile||providerId!==S.providerProfile.id))return blocked('This queued action belongs to a different provider profile.');
- if(['confirm','decline','question','conditions'].includes(action))return providerRespond(request,action,payload);
- if(action==='done')return markRequestDone(request,payload.doneKg);
- if(action==='farmerReply'){if(request.status!=='PROVIDER_RESPONDED')return blocked('Wait for a provider response before replying.');
-  request.provider.farmerReply=payload.reply;request.history.push({from:request.status,status:request.status,actor:'farmer',event:'reply-sent',at:Date.now()});toast('Reply sent.');R();return true}
- return blocked('This queued action is not supported.')}
-function syncProviderQueue(){const queued=S.providerQueue.splice(0);queued.forEach(item=>applyProviderAction(item.requestId,item.action,item.payload,item.providerId))}
-function submitProviderAction(){const request=findRequest(S.providerRequestId),type=S.providerAction,d=S.providerActionDraft;if(!request||!type)return blocked('Open a request before choosing a provider action.');
- let payload={};
- if(type==='confirm'){payload={readyTime:d.readyTime.trim(),rate:d.rate.trim(),note:d.note.trim()};if(!payload.readyTime||!payload.rate){S.providerActionAttempted=true;R();toast('Enter a ready time and indicative rate.');return}}
- if(type==='decline'){payload={reason:d.reason};if(!payload.reason){S.providerActionAttempted=true;R();toast('Choose a reason for declining.');return}}
- if(type==='question'){payload={question:d.question.trim()};if(!payload.question){S.providerActionAttempted=true;R();toast('Enter a question for the farmer.');return}}
- if(type==='conditions'){payload={conditions:d.conditions.trim()};if(!payload.conditions){S.providerActionAttempted=true;R();toast('Enter the conditions.');return}}
- if(type==='done'){payload={doneKg:d.doneKg};if(d.doneKg===''||!Number.isFinite(Number(d.doneKg))||Number(d.doneKg)<0){S.providerActionAttempted=true;R();toast('Enter the quantity handled in kilograms.');return}}
- if(!S.on){if(type==='done'&&request.status!=='ACCEPTED')return blocked('The farmer must accept before the provider marks the service done.');
-  if(type!=='done'&&!['SUBMITTED','PROVIDER_RESPONDED'].includes(request.status))return blocked('The farmer must send the request before you can respond.');
-  S.providerQueue.push({requestId:request.id,action:type,payload,providerId:S.providerProfile.id});S.providerAction='';S.providerActionRequestId=null;S.providerActionAttempted=false;toast('Saved on device · not sent yet');R();return true}
- if(type==='done')return markRequestDone(request,payload.doneKg);
- return providerRespond(request,type,payload)}
-function sendFarmerReply(){const r=currentRequest(),reply=S.farmerReplyText.trim();if(!r||!reply){toast('Enter a reply first.');return}
- if(!S.on){S.providerQueue.push({requestId:r.id,action:'farmerReply',payload:{reply}});toast('Saved on device · not sent yet')}
- else{applyProviderAction(r.id,'farmerReply',{reply})}
- S.farmerReplyOpen=false;S.farmerReplyText='';R()}
-function openProviderProfile(){if(!hasHistory(S.req,'SUBMITTED')&&!hasHistory(S.req,'SAVED_OFFLINE'))return blocked('Finish Step 6 first. Confirm the request, then send it or save it on device.');
- S.view='provider';S.providerDraft=S.providerProfile?{...S.providerProfile,services:[...S.providerProfile.services],areas:[...S.providerProfile.areas]}:{name:'',type:'',services:[],areas:[],capacity:'',schedule:'',conditions:'',rate:'',phone:''};S.providerProfileAttempted=false;S.scr='providerProfile';R()}
-function enterProviderView(){if(!hasHistory(S.req,'SUBMITTED')&&!hasHistory(S.req,'SAVED_OFFLINE'))return blocked('Complete Step 6 first: confirm and send the request, or save it on device.');
- S.view='provider';if(S.providerProfile){S.scr='providerInbox';R()}else openProviderProfile()}
-function switchView(view){if(view==='provider'){enterProviderView();return}S.view='farmer';S.scr='home';S.providerAction='';S.providerActionRequestId=null;S.farmerReplyOpen=false;R()}
-function R(){const s=S.scr,F={home,helperSetup,chat,guided,summary,matches,ai,tips,outcome,providerProfile:providerProfileScreen,providerInbox,providerDetail}[s];
- const T={helperSetup:['Helper setup','Assisted access'],chat:['Adaptive Assist',roleName()],guided:['Guided request','No internet needed'],summary:['Check your request','Confirm before sending'],matches:['Your matches','Providers who can help'],ai:['AI Coordination Engine','How your request was handled'],tips:['Protect your goods','While you wait for providers'],outcome:['Record outcome','Tell us how it went'],providerProfile:['FRESHCISION Connect','Provider profile'],providerInbox:['FRESHCISION Connect',S.providerProfile?S.providerProfile.name:'Provider view'],providerDetail:['FRESHCISION Connect',S.providerProfile?S.providerProfile.name:'Provider view']}[s];
- const N=[['home','Home','home',s==='home'],['req','Request','spark',['chat','guided','summary'].includes(s)],['matches','Matches','truck',['matches','ai','outcome'].includes(s)],['tips','Tips','leaf',s==='tips']];
- const providerView=S.view==='provider';
- const top=s==='home'?'':`<div class="top${providerView?' provider-top':''}"><button class="ib" data-a="back" aria-label="Back" style="background:rgba(255,255,255,.18);color:#fff">${ic('back')}</button><div class="top-copy"><b>${providerView?'FRESHCISION Connect':T[0]}</b><small>${providerView?`Provider view · ${esc(S.providerProfile?S.providerProfile.name:'')}`:T[1]}</small>${viewSwitch()}</div>${net()}</div>`;
- const banner=s==='home'?'':helperBanner(),body=F?F():'<div class="main"><div class="card">Screen not found.</div></div>',journey=s==='home'?'':journeyWidget();
- const nav=s==='helperSetup'||providerView?'':`<nav class="nav" aria-label="Main">${N.map(([a,l,i,o])=>`<button data-a="${a==='req'?'req':'go'}" data-v="${a}"${o?' class="on" aria-current="page"':''}>${ic(i)}${l}</button>`).join('')}</nav>`;
- $('#app').innerHTML=top+banner+journey+body+nav+endHelperDialog()+acceptSheet()+farmerReplySheet();
- const m=$('.main');if(m&&s==='chat')m.scrollTop=m.scrollHeight}
-function mic(){const C=window.SpeechRecognition||window.webkitSpeechRecognition;if(!C){toast('Voice is not supported in this browser. Please type.');return}
- const r=new C();r.lang='fil-PH';r.onresult=e=>send(e.results[0][0].transcript);r.onerror=()=>toast('Could not hear you. Try again.');r.start();toast('Listening…')}
-function updateHelperSetupState(){if(S.scr!=='helperSetup')return;const valid=helperDraftValid(),button=$('#start-helper'),help=$('#helper-start-help');
- if(button){button.disabled=!valid;button.setAttribute('aria-disabled',String(!valid))}
- if(help)help.textContent=valid?'Your details and permission are ready.':'Complete all required fields and confirm permission to continue.';
- if(S.helperAttempted){[['name','helper-full-name'],['relationship','helper-relationship'],['beneficiary','beneficiary-name'],['permission','helper-permission']].forEach(([field,id])=>{const input=$('#'+id),error=$('#'+id+'-error');if(input)input.setAttribute('aria-invalid',String(!!helperError(field)));if(error)error.textContent=helperError(field)})}}
-function act(a,v){const r=S.req;({
- cam(){$('#cam').click()},rmphoto(){r.photo='';invalidateRequestReview(r);R()},
- role(){if(r.status!=='DRAFT')return blocked('Start a new request before changing the role.');r.role=v;invalidateRequestReview(r);S.chat=[];if(!S.on)S.inputMode='guided';nav(S.inputMode)},
- offlineGuided(){S.inputMode='guided';nav('guided')},useGuided(){S.inputMode='guided';nav('guided')},useChat(){S.inputMode='chat';nav('chat')},
- helperInvalidAttempt(){if(S.scr==='helperSetup'&&!helperDraftValid()){S.helperAttempted=true;R();const id=!S.helperDraft.name.trim()?'helper-full-name':!S.helperDraft.relationship?'helper-relationship':!S.helperDraft.beneficiary.trim()?'beneficiary-name':'helper-permission';$('#'+id).focus()}},
- helperSetup(){if(S.helper)return;if(r.status!=='DRAFT')return blocked('Start a new request before changing helper access.');S.helperReturn=S.scr;S.helperDraft={name:'',relationship:'',beneficiary:'',permission:false};S.helperAttempted=false;S.scr='helperSetup';R();$('#helper-full-name').focus()},
- startHelper(){if(!helperDraftValid()){S.helperAttempted=true;R();const id=!S.helperDraft.name.trim()?'helper-full-name':!S.helperDraft.relationship?'helper-relationship':!S.helperDraft.beneficiary.trim()?'beneficiary-name':'helper-permission';$('#'+id).focus();return}
- S.helper=true;S.helperName=S.helperDraft.name.trim();S.helperRelationship=S.helperDraft.relationship;S.beneficiaryName=S.helperDraft.beneficiary.trim();S.helperPermission=true;S.helperDraft={name:'',relationship:'',beneficiary:'',permission:false};S.helperAttempted=false;S.endHelperConfirm=false;S.scr=S.helperReturn||'home';S.helperReturn='home';toast(`Helper mode started for ${S.beneficiaryName}`);R()},
- cancelHelper(){S.helperDraft={name:'',relationship:'',beneficiary:'',permission:false};S.helperAttempted=false;S.scr=S.helperReturn||'home';S.helperReturn='home';R()},
- endHelper(){S.endHelperConfirm=true;R();$('.confirm-dialog button')?.focus()},
- cancelEndHelper(){S.endHelperConfirm=false;R()},
- confirmEndHelper(){S.helper=false;S.helperName='';S.helperRelationship='';S.beneficiaryName='';S.helperPermission=false;S.endHelperConfirm=false;S.acceptProvider=null;toast('Helper mode ended.');R()},
- askAccept(){const request=findRequest(v);if(!S.helper||!request||request.status!=='PROVIDER_RESPONDED'||request.provider.status!=='waiting'||request.provider.stale)return blocked('Wait for a provider to confirm availability before asking the beneficiary to accept.');S.acceptProvider=request.id;R();$('#beneficiary-accept')?.focus()},
- beneficiaryAccept(){acceptRequest(v,true)},
- closeAccept(){S.acceptProvider=null;R()},
- switchView(){switchView(v)},
- providerEntry(){enterProviderView()},
- editProviderProfile(){openProviderProfile()},
- invalidProviderProfile(){if(S.scr==='providerProfile'&&!providerProfileValid()){S.providerProfileAttempted=true;R();const id=!S.providerDraft.name.trim()?'provider-name':!S.providerDraft.type?'provider-type':!S.providerDraft.services.length?'provider-services':'provider-areas';$('#'+id)?.focus()}},
- toggleProviderService(){const i=S.providerDraft.services.indexOf(v);i<0?S.providerDraft.services.push(v):S.providerDraft.services.splice(i,1);updateProviderProfileState();R()},
- toggleProviderArea(){const i=S.providerDraft.areas.indexOf(v);i<0?S.providerDraft.areas.push(v):S.providerDraft.areas.splice(i,1);updateProviderProfileState();R()},
- saveProviderProfile(){if(!providerProfileValid()){S.providerProfileAttempted=true;R();return}
- const id=S.providerProfile?S.providerProfile.id:`local-provider-${S.providerProfiles.length+1}`;S.providerProfile={id,name:S.providerDraft.name.trim(),type:S.providerDraft.type,services:[...S.providerDraft.services],areas:[...S.providerDraft.areas],capacity:S.providerDraft.capacity,schedule:S.providerDraft.schedule,conditions:S.providerDraft.conditions.trim(),rate:S.providerDraft.rate.trim(),phone:S.providerDraft.phone.trim()};S.providerProfiles=S.providerProfiles.filter(profile=>profile.id!==id);S.providerProfiles.push(S.providerProfile);S.providerProfileAttempted=false;S.view='provider';S.scr='providerInbox';toast('Profile saved.');R()},
- cancelProviderProfile(){S.providerProfileAttempted=false;if(S.providerProfile){S.view='provider';S.scr='providerInbox'}else{S.view='farmer';S.scr='home'}R()},
- providerTab(){S.providerTab=v;R()},
- openProviderRequest(){S.providerRequestId=Number(v);S.scr='providerDetail';S.providerAction='';S.providerActionRequestId=null;S.providerActionAttempted=false;R()},
- providerForm(){const request=findRequest(S.providerRequestId);if(!request)return blocked('Open a request before choosing a provider action.');if(v==='done'&&request.status!=='ACCEPTED')return blocked('The farmer must accept before the provider marks the service done.');if(v!=='done'&&!['SUBMITTED','PROVIDER_RESPONDED'].includes(request.status))return blocked('The farmer must send the request before you can respond.');S.providerAction=v;S.providerActionRequestId=S.providerRequestId;S.providerActionAttempted=false;S.providerActionDraft={readyTime:'',rate:'',note:'',reason:'',question:'',conditions:'',doneKg:''};R()},
- declineReason(){S.providerActionDraft.reason=v;R()},
- sendProviderAction(){submitProviderAction()},
- cancelProviderAction(){S.providerAction='';S.providerActionRequestId=null;S.providerActionAttempted=false;R()},
- openFarmerReply(){if(r.status!=='PROVIDER_RESPONDED')return blocked('Wait for a provider response before replying.');S.farmerReplyText='';S.farmerReplyOpen=true;R();$('#farmer-reply')?.focus()},
- closeFarmerReply(){S.farmerReplyOpen=false;S.farmerReplyText='';R()},
- sendFarmerReply(){sendFarmerReply()},
- findAnother(){const request=findRequest(v);if(!request||request.status!=='PROVIDER_RESPONDED'||request.provider.status!=='declined')return blocked('Find another provider is available after a provider declines.');
- request.excludedProviderIds=request.excludedProviderIds||[];if(request.provider.providerId&&!request.excludedProviderIds.includes(request.provider.providerId))request.excludedProviderIds.push(request.provider.providerId);request.journey.responseReviewed=false;S.scr='matches';toast('Request details kept. Looking for another matching provider.');R()},
- skipPhoto(){if(r.status!=='DRAFT'||!requestDetailsReady(r))return blocked('Complete all request details before continuing.');r.journey.photoSkipped=true;invalidateRequestReview(r);S.scr='ai';R()},
- continueToAi(){if(r.status!=='DRAFT'||!requestDetailsReady(r))return blocked('Complete product, quantity, municipality, service, and timing before the AI review.');if(!photoStageDone(r))return blocked('Add a photo or choose to continue without one before the AI review.');S.scr='ai';R()},
- continueToSummary(){if(r.status!=='DRAFT'||!requestDetailsReady(r))return blocked('Complete all request details before reviewing the summary.');if(!photoStageDone(r))return blocked('Add a photo or choose to continue without one first.');if(!r.journey.aiViewed)return blocked('Open and review the AI explanation before continuing to the summary.');r.journey.aiReviewed=true;S.scr='summary';R()},
- confirmRequest(){confirmRequestByUser()},
- sendRequest(){submitRequest()},
- saveOffline(){saveRequestOffline()},
- toggleJourney(){S.journeyOpen=!S.journeyOpen;R()},
- journeyItem(){const step=Number(v),status=journeyStepStatus(step);if(status==='Locked'){toast(journeyLockMessage(step));return}
- const target={1:'home',2:S.inputMode==='guided'?'guided':'chat',3:S.inputMode==='guided'?'guided':'chat',4:'ai',5:'summary',6:'summary',7:'providerProfile',8:'providerInbox',9:'providerInbox',10:'matches',11:'matches',12:'providerDetail',13:'providerDetail',14:'outcome',15:'outcome'}[step];if(step===12||step===13)S.providerRequestId=S.req.id;S.scr=target;R()},
- resumeRequest(){if(r.status==='DRAFT'){S.view='farmer';S.scr=!r.role?'home':requestDetailsReady(r)?(photoStageDone(r)?'ai':S.inputMode==='guided'?'guided':'chat'):S.inputMode==='guided'?'guided':'chat'}else if(['CONFIRMED_BY_USER','SAVED_OFFLINE'].includes(r.status)){S.view='farmer';S.scr='summary'}else if(['SUBMITTED','PROVIDER_RESPONDED','ACCEPTED','DONE_BY_PROVIDER','OUTCOME_RECORDED'].includes(r.status)){S.view='farmer';S.currentRequestId=r.id;S.scr=r.status==='DONE_BY_PROVIDER'||r.status==='OUTCOME_RECORDED'?'outcome':'matches'}R()},
- go(){if(v==='outcome'&&r.status!=='DONE_BY_PROVIDER'&&r.status!=='OUTCOME_RECORDED')return blocked('Record an outcome after the provider marks the service done.');nav(v)},
- req(){if(!r.role){toast('Choose Farmer or Fisherfolk first.');nav('home')}else nav(S.inputMode==='chat'?'chat':'guided')},
- back(){if(S.view==='provider'){if(S.scr==='providerDetail'){S.providerAction='';S.scr='providerInbox';R();return}if(S.scr==='providerProfile'){act('cancelProviderProfile');return}switchView('farmer');return}if(S.scr==='helperSetup'){act('cancelHelper');return}S.scr=S.hist.pop()||'home';R()},
- net(){S.on=!S.on;if(S.on){let didWork=false;if(r.status==='SAVED_OFFLINE'){submitRequest();didWork=true}if(S.providerQueue.length){syncProviderQueue();didWork=true}if(!didWork)toast('Back online.')}else toast('Offline mode. Requests and provider updates are saved on your device.');R()},
- send(){send($('#in').value)},mic,submit,
- edit(){if(r.status!=='DRAFT')return blocked('This request has already been confirmed. Start a new request to make changes.');S.scr=S.inputMode==='guided'?'guided':'chat';S.chat.push({t:'Okay. Review or update the request details.'});R()},
- crop(){r.crop=v;invalidateRequestReview(r);R()},need(){const i=r.needs.indexOf(v);i<0?r.needs.push(v):r.needs.splice(i,1);invalidateRequestReview(r);R()},
- qty(){r.qty=Math.max(0,r.qty+Number(v));invalidateRequestReview(r);R()},when(){r.when=v;invalidateRequestReview(r);R()},
- accept(){acceptRequest(v,false)},
- ask(){toast('You can send a question after opening a provider reply.');},remind(){toast('Reminder sent.')},
- stale(){const request=findRequest(v)||currentRequest();if(request&&request.provider.status==='waiting'){request.provider.stale=true;toast('Provider availability needs fresh confirmation.');R()}},
- refresh(){const request=findRequest(v)||currentRequest();if(request&&request.provider.stale){request.provider.stale=false;request.provider.status='new';request.provider.readyTime='';request.provider.rate='';toast('Fresh confirmation requested. Availability remains unconfirmed.');R()}},
- shared(){S.shared=S.shared===1?0:1;R()},join(){S.shared=2;toast('You joined the shared option.');R()},nojoin(){S.shared=0;toast('No problem. Nothing was shared.');R()},
- tip(){S.tips[v]=!S.tips[v];R()},tr(){S.tr=v;R()},
- res(){if(r.status!=='DONE_BY_PROVIDER'&&!(r.status==='OUTCOME_RECORDED'&&S.outcomeEdit))return blocked('The provider must mark the service done before recording an outcome.');r.outcome=v;R()},
- editOutcome(){if(r.status!=='OUTCOME_RECORDED')return blocked('Record an outcome after the provider marks the service done.');S.outcomeEdit=true;R()},
- saveout(){recordRequestOutcome()},
- reviewLearning(){if(r.status!=='OUTCOME_RECORDED')return blocked('Record the outcome before reviewing session learning.');r.journey.learned=true;r.history.push({from:r.status,status:r.status,actor:'farmer',event:'session-learning-reviewed',at:Date.now()});toast('Session summary reviewed.');R()},
- newRequest(){if(r.status!=='OUTCOME_RECORDED'||!r.journey.learned)return blocked('Review the session summary before starting a new request.');S.req=blankRequest();S.chat=[];S.draft='';S.ask='';S.outcomeEdit=false;S.shared=0;S.currentRequestId=null;S.acceptProvider=null;S.providerAction='';S.providerRequestId=null;S.providerTab='new';S.journeyOpen=false;S.hist=[];S.scr='home';S.view='farmer';toast('Ready for a new request.');R()}
-})[a]?.()}
-document.addEventListener('click',e=>{if(e.target.id==='accept-backdrop'){act('closeAccept');return}if(e.target.id==='reply-backdrop'){act('closeFarmerReply');return}const b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
-document.addEventListener('input',e=>{const id=e.target.id;
- if(id==='in')S.draft=e.target.value;
- if(id==='farmer-name')S.req.name=e.target.value;
- if(id==='farmer-phone')S.req.phone=e.target.value;
- if(id==='farmer-address')S.req.address=e.target.value;
- if(id==='helper-full-name'){S.helperDraft.name=e.target.value;updateHelperSetupState()}
- if(id==='beneficiary-name'){S.helperDraft.beneficiary=e.target.value;updateHelperSetupState()}
- if(id==='provider-name')S.providerDraft.name=e.target.value;
- if(id==='provider-capacity')S.providerDraft.capacity=e.target.value;
- if(id==='provider-conditions')S.providerDraft.conditions=e.target.value;
- if(id==='provider-rate')S.providerDraft.rate=e.target.value;
- if(id==='provider-phone')S.providerDraft.phone=e.target.value;
- if(id==='provider-ready-time')S.providerActionDraft.readyTime=e.target.value;
- if(id==='provider-action-rate')S.providerActionDraft.rate=e.target.value;
- if(id==='provider-action-note')S.providerActionDraft.note=e.target.value;
- if(id==='provider-question')S.providerActionDraft.question=e.target.value;
- if(id==='provider-conditions-text')S.providerActionDraft.conditions=e.target.value;
- if(id==='provider-done-kg')S.providerActionDraft.doneKg=e.target.value;
- if(id==='farmer-reply')S.farmerReplyText=e.target.value;
- if(id==='kg')S.outcomeKg=e.target.value;
- updateProviderProfileState()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.endHelperConfirm)act('cancelEndHelper');else if(S.acceptProvider!==null)act('closeAccept');else if(S.farmerReplyOpen)act('closeFarmerReply');else if(S.providerAction)act('cancelProviderAction');else if(S.scr==='helperSetup')act('cancelHelper')}
- if(e.key==='Enter'&&e.target.id==='in')act('send');
- if(e.key==='Enter'&&S.scr==='helperSetup'&&['helper-full-name','helper-relationship','beneficiary-name','helper-permission'].includes(e.target.id)){e.preventDefault();act('startHelper')}
- if(e.key==='Enter'&&S.scr==='providerProfile'&&['provider-name','provider-type','provider-capacity','provider-schedule','provider-rate','provider-phone'].includes(e.target.id)){e.preventDefault();act('saveProviderProfile')}});
-document.addEventListener('change',e=>{const id=e.target.id;
- if(id==='loc'){S.req.loc=e.target.value;invalidateRequestReview()}
- if(id==='helper-relationship'){S.helperDraft.relationship=e.target.value;updateHelperSetupState()}
- if(id==='helper-permission'){S.helperDraft.permission=e.target.checked;updateHelperSetupState()}
- if(id==='provider-type')S.providerDraft.type=e.target.value;
- if(id==='provider-schedule')S.providerDraft.schedule=e.target.value;
- if(e.target.type==='number'&&id==='provider-capacity')S.providerDraft.capacity=e.target.value;
- if(e.target.id==='cam'&&e.target.files[0]){S.req.photo=URL.createObjectURL(e.target.files[0]);S.req.journey.photoSkipped=false;invalidateRequestReview();e.target.value='';toast('Photo added to your request.');R()}
- updateProviderProfileState()});
-R();
-</script></body></html>
+const paths={leaf:"M19 3C10 2 3 6 5 14c2 8 15 5 14-11Z M3 21 15 9 M8 15v-5 M12 11h5",home:"m3 10 9-7 9 7v11h-6v-7H9v7H3Z",notebook:"M5 3h15v18H5z M2 7h5 M2 12h5 M2 17h5 M10 8h6 M10 12h6",chat:"M21 4H3v13h5v4l5-4h8Z M7 9h10 M7 13h6",route:"M5 5h9a4 4 0 0 1 0 8H9a4 4 0 0 0 0 8h10 M5 2v6 M19 18v5",users:"M16 21v-3a5 5 0 0 0-10 0v3 M11 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M19 4a4 4 0 0 1 0 7 M19 15a5 5 0 0 1 3 5",arrow:"M4 12h16 m-6-6 6 6-6 6",back:"M20 12H4 m6-6-6 6 6 6",pin:"M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z M14 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0",wifi:"M3 8a15 15 0 0 1 18 0 M6 12a10 10 0 0 1 12 0 M9 16a5 5 0 0 1 6 0 M12 20h.01",fish:"M5 12c3-8 12-8 16 0-4 8-13 8-16 0Z M5 12l-4-5v10Z M16 10h.01 M10 6l2-3 3 3",box:"m3 7 9-4 9 4v13H3Z M3 7l9 4 9-4 M12 11v9",check:"m5 12 4 4L20 5",shield:"m12 2 8 4v6c0 5-8 10-8 10S4 17 4 12V6Z m-4 10 3 3 5-6",sun:"M12 2v2 M12 20v2 M2 12h2 M20 12h2 M5 5l2 2 M17 17l2 2 M5 19l2-2 M17 7l2-2 M17 12a5 5 0 1 1-10 0 5 5 0 0 1 10 0",switch:"M3 7h17l-4-4 M21 17H4l4 4",camera:"M3 7h4l2-3h6l2 3h4v14H3Z M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0",inbox:"M3 4h18v16H3Z M3 13h5l2 3h4l2-3h5",lock:"M6 10V7a6 6 0 0 1 12 0v3 M4 10h16v12H4Z M12 15v3",plus:"M12 4v16 M4 12h16",mic:"M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z M5 11a7 7 0 0 0 14 0 M12 18v3",truck:"M2 6h11v10H2z M13 9h5l4 4v3h-9 M9 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0 M19 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0"};
+const icon=(name)=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[name]||paths.leaf}"/></svg>`;
+const esc=(s)=>String(s??"").replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+const state={page:"home",role:"farmer",helper:false,online:true,queue:[],step:1,accepted:false,acceptedProvider:null,confirmed:false,photo:"",photoFile:null,chatDraft:{},request:{produce:"Tilapia",quantity:"120",town:"Mercedes",need:"Cold storage",time:"Today, before 4 pm"},messages:[],inbox:"Waiting",ask:"",conditions:"",chosen:0,noMatch:false,hideMe:false,photoURL:"",helperName:"Nena Abante",tab:"New",pid:null,pform:"",profile:{saved:false,name:"",type:"",services:[],coverage:[],capacity:"",schedule:"",conditions:"",rate:"",contact:""},reqs:[
+{id:"FC-021",farmer:"Maricel Dumaguit",produce:"Bangus",quantity:80,town:"Daet",need:"Cold storage",time:"Today, 3 pm",photo:"",photoURL:"",helper:"",received:"07:40",status:"new"},
+{id:"FC-022",farmer:"Ernesto Cabral",produce:"Pineapple",quantity:250,town:"Labo",need:"Transport",time:"Tomorrow, morning",photo:"",photoURL:"",helper:"",received:"08:15",status:"new"},
+{id:"FC-023",farmer:"Liza Ramos",produce:"Tuna",quantity:40,town:"Mercedes",need:"Cold storage",time:"Today, noon",photo:"tuna-box.jpg",photoURL:"",helper:"Jun Ramos",received:"09:05",status:"new"}]};
+const providers=[
+{name:"Daet Ice Plant",town:"Daet",distance:"14 km",capacity:500,rate:3,age:2,service:"Cold storage",about:"Ice and cold storage for local fishers. Bring fish in clean, covered boxes."},
+{name:"Mercedes Fish Landing Cooperative",town:"Mercedes",distance:"3 km",capacity:200,rate:4,age:8,service:"Cold storage",about:"Shared cold storage near the fish landing. Please call before bringing your catch."},
+{name:"Labo Harvest Transport",town:"Labo",distance:"32 km",capacity:800,rate:2,age:1,service:"Transport",about:"Covered transport for pineapple, tomato, and other local produce."}];
+const status=(s)=>`<span class="status ${/^(Confirmed|Completed)/.test(s)?"confirmed":/^Declined/.test(s)?"declined":s==="Locked"?"locked":""}">${esc(s)}</span>`;
+const btn=(text,action,kind="")=>`<button class="btn ${kind}" data-action="${action}">${text}</button>`;
+const head=(label,title,desc="")=>`<header class="page-head"><h1>${title}</h1>${desc?`<p>${desc}</p>`:""}</header>`;
+const back=()=>`<button class="back" data-go="home">${icon("back")} Back to home</button>`;
+const seaWindow=()=>`<div class="sea-window" role="img" aria-label="A fishing boat on a calm sea near palm trees"><svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="150" fill="#CFE8EC"/><circle cx="250" cy="36" r="17" fill="#F4D58D"/><path d="M0 84 60 62 120 80 190 56 260 82 330 66 400 84V100H0z" fill="#8FC1B3"/><rect y="80" width="400" height="70" fill="#7FBCC8"/><g class="d1"><rect y="92" width="640" height="60" fill="url(#wv1)"/></g><g class="d2"><rect y="116" width="640" height="60" fill="url(#wv2)"/></g><use class="bob" href="#banca" x="110" y="46" width="120" height="70"/><use href="#palm" x="334" y="44" width="52" height="104"/><use href="#palm" x="2" y="66" width="40" height="80"/><path d="M0 128Q46 112 104 130V150H0z" fill="#EBDDBB"/><g class="sway"><rect x="64" y="100" width="5" height="22" fill="#3E5C4A"/><rect x="71" y="100" width="5" height="22" fill="#3E5C4A"/><rect x="61" y="78" width="18" height="24" rx="4" fill="#0C5C48"/><circle cx="70" cy="71" r="7" fill="#C98F5C"/><ellipse cx="70" cy="66" rx="13" ry="3.5" fill="#E8C86A"/><path d="M64 66Q70 55 76 66z" fill="#E8C86A"/><path d="M61 84L54 95" stroke="#C98F5C" stroke-width="4" stroke-linecap="round"/><path d="M47 95h14l-2 10H49z" fill="#8B5E3C"/><circle cx="51" cy="94" r="3" fill="#C0392B"/><circle cx="57" cy="94" r="3" fill="#C0392B"/><g class="wv"><path d="M79 82L88 70" stroke="#C98F5C" stroke-width="4" stroke-linecap="round"/><circle cx="88.5" cy="69" r="2.8" fill="#C98F5C"/></g></g></svg></div>`;
+function toast(text){document.getElementById("toast").textContent=text;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>(document.getElementById("toast").textContent=""),6500)}
+function go(page){if(page==="guided"&&state.page!=="guided")state.guideStep=0;state.page=page;render();window.scrollTo(0,0);document.querySelector("main h1")?.focus({preventScroll:true})}
+function home(){
+if(state.role==="provider")return providerHome();
+let r=state.request;
+return `<div class="location-strip"><span>${icon("pin")} ${esc(r.town)}, Camarines Norte</span><button class="connection" data-action="connection" aria-label="Toggle sample connection">${icon("wifi")} ${state.online?"Online":"Offline"}</button></div>${seaWindow()}<header class="home-greeting"><h1>Magandang umaga,<br><span>Rodel.</span></h1><p>What needs taking care of today?</p></header><section class="assist-panel"><div class="assist-top"><span>ADAPTIVE ASSIST</span>${icon("leaf")}</div><h2>A hand with your<br>catch or harvest.</h2><button class="btn" data-go="${state.online?"chat":"guided"}">Start a request ${icon("arrow")}</button></section><button class="request-link" data-action="open-provider">I am a provider ${icon("truck")}</button><div class="section-title"><h2>Your current request</h2><button class="text-button" data-go="requests">View all ${icon("arrow")}</button></div><article class="request-sheet"><div class="request-top"><span>FC-024</span>${status(myReq()?.status==="done"?"Completed":state.accepted?"Confirmed":"Waiting")}</div><div class="request-title">${icon("fish")} ${esc(r.need)} · ${esc(r.produce)}</div><div class="request-quantity">${esc(r.quantity)}<small>kg</small></div><div class="request-detail">${icon("pin")} ${esc(r.town)} <span>·</span> ${esc(r.time)}</div><button class="request-link" data-go="matches"><span>${state.accepted?"View your provider":"See local matches"}</span>${icon("arrow")}</button></article>`}
+function providerHome(){
+let p=state.profile,n=state.reqs.filter(fits).filter((r)=>r.status==="new").length;
+return `<div class="location-strip"><span>${icon("pin")} Camarines Norte</span><button class="connection" data-action="connection">${icon("wifi")} ${state.online?"Online":"Offline"}</button></div>${seaWindow()}<header class="home-greeting"><h1>Your work.<br><span>Your neighbours.</span></h1><p>${p.saved?esc(p.name):"Set up your profile to see requests."}</p></header><section class="assist-panel"><div class="assist-top"><span>PROVIDER INBOX</span>${icon("inbox")}</div><h2>${!p.saved?"Start with<br>your profile.":n?n+" new request"+(n>1?"s":"")+"<br>for you.":"No new requests."}</h2><button class="btn" data-go="${p.saved?"inbox":"profile"}">${p.saved?"Open your inbox":"Set up profile"} ${icon("arrow")}</button></section>${p.saved?`<div class="section-title"><h2>Your available capacity</h2><button class="text-button" data-go="profile">Update ${icon("arrow")}</button></div><div class="quantity">${esc(p.capacity||0)} <small>kg</small></div><p>${esc(p.schedule||"Schedule not set")} · <span class="mono">₱${esc(p.rate||0)}</span> per kg, per day</p>`:""}`}
+function chat(){
+return back()+head("","Tell us what you need.","Practice assistant · English or Filipino")+
+`<div class="chat"><div class="message"><strong>FRESHCISION</strong>What do you need a hand with? For example: “May 120 kilo akong tilapia sa Mercedes. Kailangan ko ng cold storage.”</div>${state.messages.map((m)=>`<div class="message ${m.who==="You"?"you":""}"><strong>${m.who}</strong>${esc(m.text)}${m.img?`<img class="thumb" src="${m.img}" alt="Your photo" style="margin-top:8px;width:96px;height:96px">`:""}</div>`).join("")}<div class="quick"><button data-prompt="I need cold storage for 120 kg of tilapia in Mercedes today.">Store my catch</button><button data-prompt="Kailangan ko ng transport para sa 250 kilo ng pineapple sa Labo.">Move my harvest</button><button data-go="guided">Guide me ${icon("arrow")}</button></div>${state.chatReady?`<div class="actions">${btn("Review my request","summary")}</div>`:""}<form id="chat-form" class="chat-bar"><button type="button" class="ib-sq" data-action="mic" aria-label="Voice chat">${icon("mic")}</button><button type="button" class="ib-sq" data-action="cam" aria-label="Add a photo">${icon("camera")}</button><label for="message" class="sr">Your message</label><input id="message" name="message" required placeholder="Type or speak…" autocomplete="off"><button class="btn" type="submit" aria-label="Send message">${icon("arrow")}</button></form><input type="file" id="chatphoto" accept="image/*" capture="environment" hidden></div>`}
+function guided(){
+let i=state.guideStep||0,r=state.request,
+fields=[["need","What do you need?","Choose the kind of help you need.",["Cold storage","Transport","Find a buyer"]],["produce","What is your catch or crop?","Anong ani o isda?",["Tilapia","Bangus","Tuna","Pineapple","Tomato"]],["quantity","How many kilograms?","An estimate is okay. Ilang kilo?"],["town","Which town are you in?","Choose where the provider should meet you.",["Mercedes","Daet","Labo","Paracale","Basud","Vinzons","Talisay","Jose Panganiban"]],["time","When do you need help?","Today, tomorrow, or a time that works for you."],["photo","Add a photo?","Optional. You can continue without a photo."]],
+f=fields[i];
+return back()+`<div class="wizard-count">${state.online?"NEW REQUEST":"OFFLINE REQUEST"} · ${i+1} OF 6</div><div class="wizard-progress">${fields.map((_,n)=>`<span class="${n<=i?"done":""}"></span>`).join("")}</div>`+head("Guided mode",f[1],f[2])+
+`<form id="guided-step" data-key="${f[0]}"><div class="wizard-field">${i===5?`<div class="panel">${icon("camera")}<label class="field">Take or choose a photo<input id="photo" type="file" accept="image/*" capture="environment"></label><p id="photo-status">${state.photo?esc(state.photo):"No photo added. That is okay."}</p></div>`:`<label class="field">${i===2?"Quantity in kg":f[0]==="time"?"When you need it":"Your answer"}${f[3]?`<select name="answer">${f[3].map((v)=>`<option ${r[f[0]]===v?"selected":""}>${v}</option>`).join("")}</select>`:`<input name="answer" ${i===2?'type="number" min="1" max="100000" inputmode="decimal"':'type="text"'} value="${esc(r[f[0]])}" required>`}</label>`}</div><div class="wizard-actions"><button class="btn" type="submit">${i===5?"Check my summary":"Continue"} ${icon("arrow")}</button>${i>0?btn("Previous question","guided-back","secondary"):""}</div></form>`}
+function summary(){
+let r=state.request;
+return back()+head("Request 024 · Review","Does this look right?","Check, then send.")+
+`<div class="split"><section><div class="eyebrow">${esc(r.need)} · ${esc(r.produce)}</div><div class="quantity">${esc(r.quantity)} <small>kg</small></div>${[["Town",r.town],["Needed by",r.time],["Photo",state.photo?"Added for this session":"No photo — that is okay"],["Requested by",state.helper?"Helper, for Rodel Abante":"Rodel Abante"]].map(([k,v])=>`<div class="detail-row"><span>${k}</span><b>${esc(v)}</b></div>`).join("")}<div class="actions">${btn(state.online?"Find a provider":"Save to offline queue","send")}${btn("Edit details","guided","secondary")}</div></section></div>`}
+const FISH=["Tilapia","Bangus","Tuna"];
+const myReq=()=>state.reqs.find((r)=>r.mine);
+const provOffers=(p)=>{if(!p.isMe)return[p.service];let s=state.profile.services,o=[];if(s.includes("Cold storage")||s.includes("Ice"))o.push("Cold storage");if(s.includes("Transport"))o.push("Transport");if(s.includes("Buy produce")||s.includes("Buy fish"))o.push("Find a buyer");return o};
+const fits=(r)=>{let p=state.profile,s=p.services;return p.saved&&p.coverage.includes(r.town)&&(r.need==="Cold storage"?s.includes("Cold storage")||s.includes("Ice"):r.need==="Transport"?s.includes("Transport"):s.includes(FISH.includes(r.produce)?"Buy fish":"Buy produce"))};
+const profileOk=()=>{let p=state.profile;return !!(p.name.trim()&&p.type&&p.services.length&&p.coverage.length)};
+function syncMe(){let p=state.profile;providers[0]={name:p.name.trim(),town:p.coverage[0],distance:"in your area",capacity:+p.capacity||0,rate:+p.rate||0,age:0,service:"",about:p.conditions||"Provider on FRESHCISION Connect.",isMe:true}}
+function createMine(){state.reqs=state.reqs.filter((r)=>!r.mine);let q=state.request;state.hideMe=false;state.accepted=false;state.acceptedProvider=null;state.reqs.push({id:"FC-024",mine:true,farmer:"Rodel Abante",produce:q.produce,quantity:+q.quantity,town:q.town,need:q.need,time:q.time,photo:state.photo,photoURL:state.photoURL,helper:state.helper?state.helperName:"",received:new Date().toTimeString().slice(0,5),status:"new"})}
+function doAccept(i){let p=providers[i],m=myReq();state.accepted=true;state.acceptedProvider=i;if(p.isMe&&m){m.status="confirmed";m.contactShared=true}}
+function applyP(k,d){let r=state.reqs.find((x)=>x.id===d.id);if(!r)return;
+if(k==="confirm"){r.status="waiting";r.ready=d.ready;r.rate=d.rate;r.note=d.note;toast("Confirmed. "+r.farmer.split(" ")[0]+" can now accept.")}
+if(k==="decline"){r.status="declined";r.reason=d.reason;toast("Decline sent.")}
+if(k==="ask"){r.ask=d.text;toast("Question sent.")}
+if(k==="cond"){r.cond=d.text;toast("Conditions sent.")}
+if(k==="done"){r.status="done";r.doneKg=d.kg;toast("Marked as done.")}}
+const respBlock=(m)=>{if(!m)return"";let h="";
+if(m.status==="declined")h+=`<div class="note">Declined: ${esc(m.reason)}</div>`;
+if(["waiting","confirmed","done"].includes(m.status))h+=`<div class="note">Ready by ${esc(m.ready)} · <span class="mono">₱${esc(m.rate)}</span> per kg per day${m.note?" · "+esc(m.note):""}</div>`;
+if(m.ask)h+=`<div class="note">Provider asks: ${esc(m.ask)}</div>`;
+if(m.cond)h+=`<div class="note">Provider conditions: ${esc(m.cond)}</div>`;
+if(m.reply)h+=`<div class="note">You replied: ${esc(m.reply)}</div>`;
+else if(m.ask||m.cond)h+=`<div class="actions" style="margin-top:0">${btn("Reply","freply","secondary")}</div>`;
+if(m.status==="done")h+=`<div class="note">Completed · ${esc(m.doneKg)} kg handled.</div>`;
+return h};
+function matches(){
+let m=myReq(),list=state.noMatch?[]:providers.filter((p)=>provOffers(p).includes(state.request.need)&&(!p.isMe||(state.profile.coverage.includes(state.request.town)&&!state.hideMe)));
+return back()+head("Request 024 · Local matches","A little closer to help.","A provider is available only after it confirms.")+
+`<div class="actions" style="margin:0 0 24px">${btn("Edit my request","guided","secondary")}</div>`+
+(list.length?list.map((p)=>{let i=providers.indexOf(p),over=+state.request.quantity>p.capacity,mm=p.isMe?m:null,
+lab=p.isMe&&!mm?"Request not sent":mm?({new:"Awaiting reply",waiting:"Confirmed available",confirmed:"Confirmed",done:"Completed",declined:"Declined"})[mm.status]:over?"Above capacity":p.age>6?"Check details":"Available in sample";
+return `<article class="provider-row"><div>${status(lab)}</div><h2>${esc(p.name)}</h2><p>${esc(p.town)} · ${p.distance}${p.isMe?"":" from sample location"}</p><div class="provider-meta"><span class="mono">₱${p.rate} / kg / day</span><span class="mono">Up to ${p.capacity} kg</span><span>Updated ${p.age} days ago</span></div>${p.age>6?'<p class="note">Confirm with the provider first. This information is older than 6 days.</p>':""}${over?'<p class="note">Your quantity is above capacity. Reduce the quantity or choose another provider.</p>':""}${respBlock(mm)}<div class="actions">${mm&&mm.status==="declined"?btn("Find another provider","hide-me"):btn("View provider details","provider:"+i,"secondary")}${btn("Why this match?","explain:"+i,"secondary")}</div></article>`}).join(""):`<div class="empty">${icon("pin")}<h2>No provider match yet.</h2><p>Try another town, change the time, or ask for a smaller load. Your request is still here.</p>${btn("Change request details","guided")}</div>`)}
+function provider(){
+let accepted=state.accepted&&state.acceptedProvider===state.chosen,p=providers[state.chosen],over=+state.request.quantity>p.capacity,m=p.isMe?myReq():null,wait=p.isMe&&!(m&&m.status==="waiting"),blocked=state.helper||state.role!=="farmer";
+return back()+head("FRESHCISION Connect · "+(p.isMe?"Provider":"Sample provider"),esc(p.name),esc(p.about))+
+`<div class="split"><section>${[["Based in",p.town],["Service",p.isMe?provOffers(p).join(", ")||"—":p.service],["Capacity",p.capacity+" kg"],["Rate","₱"+p.rate+" / kg / day"],["Last update",p.age+" days ago"],["Estimate","₱"+(+state.request.quantity*p.rate).toLocaleString()+" for "+state.request.quantity+" kg"]].map(([k,v])=>`<div class="detail-row"><span>${k}</span><b>${esc(v)}</b></div>`).join("")}<div class="note ${accepted?"":"locked-note"}"><span>${accepted?(p.isMe?"Contact unlocked · "+esc(state.profile.contact||"No number given"):"Contact unlocked · Sample only: 0917 000 0124. Do not call this demonstration number."):`${icon("lock")} Contact hidden. Only shown after the farmer accepts.`}</span></div>${p.age>6?'<div class="note">Confirm with the provider first. These details are older than 6 days.</div><label class="checkline"><input id="stale-check" type="checkbox"> I checked the details with the provider.</label>':""}${over?'<div class="note">Quantity above capacity. Edit your request before accepting.</div>':""}${state.helper?'<div class="note">Helper mode: only Rodel can accept. Switch to beneficiary mode and hand the device to Rodel.</div>':""}${respBlock(m)}${accepted?`<div class="note">You accepted. ${p.isMe?"The provider can now see your contact.":"Waiting for provider confirmation."}</div>`:`<button class="btn" data-action="accept" ${blocked||over||wait?"disabled":""}>${blocked?"Only the beneficiary can accept":over?"Cannot accept — above capacity":p.isMe&&!m?"Send your request first":wait?"Waiting for the provider to confirm":"Accept this provider"}</button>`}<div class="actions">${btn("See other providers","matches","secondary")}</div></section></div>`}
+function explain(){
+let p=providers[state.chosen];
+return back()+head("Match explanation · Rule-based demo","Why this provider?","A match is a suggestion, not a promise.")+
+`<div class="panel"><h2>${esc(p.name)}</h2><div class="detail-row"><span>Service</span><b>${provOffers(p).includes(state.request.need)?"Matches your request":"Different service — check first"}</b></div><div class="detail-row"><span>Quantity</span><b>${+state.request.quantity<=p.capacity?"Within capacity":"Above capacity"}</b></div><div class="detail-row"><span>Location</span><b>${esc(p.town)} · ${p.distance}</b></div><div class="detail-row"><span>Freshness of details</span><b>${p.age} days old</b></div><p class="note">We compare service, location, capacity, and update age. We do not know the road conditions or current availability.${p.age>6?" Confirm with the provider first.":""}</p>${btn("Back to provider","provider:"+state.chosen)}</div>`}
+function requests(){
+return back()+head("Your requests","Every request has a place.","Sample records in your field notebook.")+
+`<div class="ledger-row"><div class="row-icon">${icon("fish")}</div><div class="row-content"><h3>${esc(state.request.need)} · ${esc(state.request.produce)}</h3><p>${esc(state.request.town)} · ${esc(state.request.quantity)} kg</p></div>${btn("Open","matches","secondary")}</div><div class="ledger-row"><div class="row-icon">${icon("box")}</div><div class="row-content"><h3>Pineapple to Daet market</h3><p>Labo · 250 kg · Confirmed sample</p></div>${btn("Outcome","outcome","secondary")}</div>`}
+const rlabel={new:"New",waiting:"Waiting for farmer",confirmed:"Confirmed",done:"Completed",declined:"Declined"};
+function inbox(){
+if(!state.profile.saved)return back()+head("FRESHCISION Connect · Provider view","Set up your profile first.","Requests that match your services and area will appear here.")+`<div class="actions">${btn("Set up profile","edit-profile")}</div>`;
+let list=state.reqs.filter(fits),tabs=["New","Waiting for farmer","Confirmed","Done"],tabOf=(r)=>({new:"New",waiting:"Waiting for farmer",confirmed:"Confirmed",done:"Done",declined:"Done"})[r.status],shown=list.filter((r)=>tabOf(r)===state.tab);
+return back()+head("FRESHCISION Connect · "+esc(state.profile.name),"A neighbour needs a hand.","Oldest first.")+
+`<div class="tabs" role="tablist">${tabs.map((t)=>`<button role="tab" aria-selected="${state.tab===t}" class="${state.tab===t?"on":""}" data-action="tab:${t}"><b>${list.filter((r)=>tabOf(r)===t).length}</b>${t}</button>`).join("")}</div>`+
+(shown.length?shown.map((r)=>`<article class="provider-row"><div class="request-top"><span>${r.id} · RECEIVED ${r.received}</span>${status(rlabel[r.status])}</div><div class="pcard">${r.photoURL?`<img class="thumb" src="${r.photoURL}" alt="Photo added by the farmer">`:r.photo?`<span class="thumb" aria-label="Photo added">${icon("camera")}</span>`:""}<div><div class="request-quantity" style="font-size:40px;margin:0">${r.quantity}<small>kg</small></div><h3>${esc(r.produce)}</h3></div></div><p>${esc(r.town)} · ${esc(r.need)} · ${esc(r.time)}</p>${r.helper?`<p class="sm">Sent by ${esc(r.helper)} for ${esc(r.farmer)}</p>`:""}<div class="actions">${btn("Open request","popen:"+r.id)}</div></article>`).join(""):`<div class="empty">${icon("inbox")}<h2>${state.tab==="New"?"No new requests.":"Nothing here yet."}</h2><p>Requests that match your services and area will appear here.</p>${btn("Update my profile","edit-profile","secondary")}</div>`)}
+function pdetail(){
+let r=state.reqs.find((x)=>x.id===state.pid);if(!r)return inbox();
+let f=state.pform,first=r.farmer.split(" ")[0],cancel='<button type="button" class="btn secondary" data-action="pform:" style="width:100%;margin-top:11px">Cancel</button>',
+form=(k,t,inner,b)=>`<form id="pform" data-kind="${k}" class="panel"><h2>${t}</h2>${inner}<button class="btn" type="submit" style="width:100%">${b}</button>${cancel}</form>`,
+forms={confirm:form("confirm","Confirm availability",`<label class="field">Ready by<input name="ready" required placeholder="for example, 3 pm today"></label><label class="field">Indicative rate (₱ per kg per day)<input name="rate" type="number" min="0" step="0.5" required value="${esc(state.profile.rate)}"></label><label class="field">Note (optional)<textarea name="note" maxlength="300"></textarea></label>`,"Confirm availability"),
+decline:form("decline","Why are you declining?",["No capacity","Outside area","Not my service","Product not suitable","Other"].map((x,i)=>`<label class="radio"><input type="radio" name="reason" value="${x}" ${i?"":"required"}> ${x}</label>`).join(""),"Send decline"),
+ask:form("ask","Ask a question",'<label class="field">Your question<textarea name="text" required maxlength="600" placeholder="For example: Can you bring covered boxes?"></textarea></label>',"Send question"),
+cond:form("cond","Add conditions",'<label class="field">Your conditions<textarea name="text" required maxlength="600" placeholder="For example: Minimum 40 kg"></textarea></label>',"Send conditions"),
+done:form("done","Mark as done",`<label class="field">Quantity handled (kg)<input name="kg" type="number" min="1" required value="${r.quantity}"></label>`,"Mark as done")},
+acts=r.status==="new"?`<div class="request-actions">${btn("Confirm","pform:confirm")}${btn("Decline","pform:decline","secondary")}${btn("Ask a question","pform:ask","secondary")}${btn("Add conditions","pform:cond","secondary")}</div>`:r.status==="waiting"?`<div class="request-actions">${btn("Ask a question","pform:ask","secondary")}${btn("Add conditions","pform:cond","secondary")}</div><p class="note">Waiting for ${esc(first)} to accept. Only the farmer can accept.</p>`:r.status==="confirmed"?`<div class="actions">${btn("Mark as done","pform:done")}</div>`:"";
+return back()+head("Request "+r.id+" · "+rlabel[r.status],esc(r.produce)+", "+r.quantity+" kg","")+
+`${[["Municipality",r.town],["Service needed",r.need],["Needed by",r.time],["Received",r.received]].map(([k,v])=>`<div class="detail-row"><span>${k}</span><b>${esc(v)}</b></div>`).join("")}${r.helper?`<p class="note">Sent by ${esc(r.helper)} for ${esc(r.farmer)}</p>`:""}${r.photoURL?`<div class="pcard"><img class="thumb" src="${r.photoURL}" alt="Photo added by the farmer"></div>`:""}${r.photo?'<p class="sm">Photo is not a freshness check.</p>':""}<div class="note ${r.contactShared?"":"locked-note"}"><span>${r.contactShared?esc(r.farmer)+" · 0917 000 0124 (sample only, do not call)":`${icon("lock")} Contact hidden. Shown after the farmer accepts.`}</span></div>${r.status==="declined"?`<div class="note">You declined: ${esc(r.reason)}</div>`:""}${["waiting","confirmed","done"].includes(r.status)?`<div class="note">You confirmed: ready by ${esc(r.ready)}, <span class="mono">₱${esc(r.rate)}</span> per kg per day.</div>`:""}${r.ask?`<div class="note">Your question: ${esc(r.ask)}</div>`:""}${r.cond?`<div class="note">Your conditions: ${esc(r.cond)}</div>`:""}${r.reply?`<div class="note">${esc(first)} replied: ${esc(r.reply)}</div>`:""}${r.status==="done"?`<div class="note">Marked as done · ${esc(r.doneKg)} kg handled.</div>`:""}${forms[f]||acts}`}
+function tips(){
+return back()+head("Notes from the field","Good care goes a long way.","General tips only.")+
+[["Keep fish cool","Use clean ice and covered boxes. Keep the catch out of direct sun."],["Give tomatoes some room","Use clean, rigid crates. Do not overfill them or put heavy sacks on top."],["Check before the trip","Ask about capacity, opening time, rate, and where to unload."],["When signal is weak","Use guided mode. Keep this page open, then send your queued request when you have signal."]].map(([t,p],i)=>`<section class="ledger-row"><span class="step-number">${i+1}</span><div><h3>${t}</h3><p>${p}</p></div></section>`).join("")+`<div class="actions">${btn("Make a request","guided")}</div>`}
+function outcome(){
+let m=myReq(),d=!!(m&&m.status==="done"),q=d?m.doneKg:250,pr=d?m.produce:"Pineapple",pl=d?m.town:"Labo",who=d?providers[state.acceptedProvider??0].name:"Labo Harvest Transport";
+return back()+head("Field record · "+(d?"FC-024":"FC-023")+" · Sample","A harvest that made it.",d?esc(q)+" kg of "+esc(pr.toLowerCase())+" handled by "+esc(who)+".":"250 kg of pineapple, from Labo to Daet market. A sample completed trip.")+
+`<div class="bento"><div class="big"><div class="eyebrow">${d?"Handled":"Moved to market"}</div><div class="quantity">${esc(q)} <small>kg</small></div><p>${esc(pr)} · ${esc(pl)}</p>${status("Completed")}</div><div style="grid-column:1/-1"><div class="eyebrow">With help from</div><h3>${esc(who)}</h3><p>${d?"Marked done by the provider.":"Delivered to Daet market."}</p></div></div><form id="outcome-form"><label class="field">Kilos sold or saved<input name="kg" type="number" min="0" value="${d?esc(q):""}"></label><label class="field">How did it go?<textarea name="outcome" placeholder="Tell us what went well, or what needs fixing." required>${esc(state.outcome||"")}</textarea></label><button class="btn" type="submit">Save my field note</button></form>`}
+function settings(){
+return back()+head("Who is using this notebook?","The right role. Clear choices.","Only the farmer or fisher can accept.")+
+`<div class="panel"><label class="field">Your role<select id="role-select"><option value="farmer" ${state.role==="farmer"?"selected":""}>Farmer / fisherfolk · Rodel Abante</option><option value="provider" ${state.role==="provider"?"selected":""}>Provider · Daet Ice Plant</option></select></label><label class="checkline"><input type="checkbox" id="helper-mode" ${state.helper?"checked":""}> I am helping the farmer or fisher.</label>${state.helper?`<label class="field">Helper’s name<input data-hn value="${esc(state.helperName)}"></label>`:""}${btn("Open my notebook","open-role")}</div><div class="account-links"><button class="text-button" data-action="connection">${state.online?"Online · Switch to offline":"Offline · Switch to online"}${icon("wifi")}</button><button class="text-button" data-go="queue">Offline outbox (${state.queue.length})${icon("inbox")}</button><button class="text-button" data-go="tips">Field tips${icon("leaf")}</button></div>`}
+function queue(){
+return back()+head(state.online?"Online · Outbox":"Offline · Outbox","Ready when you have signal.",state.online?"Tap Send to deliver.":"Saved on device, not sent yet.")+
+(state.queue.length?state.queue.map((q,i)=>`<div class="ledger-row"><div class="row-content"><h3>${esc(q.title)}</h3><p>Saved on device, not sent yet</p></div><button class="btn" data-action="flush:${i}" ${state.online?"":"disabled"}>${state.online?"Send sample":"Offline — connect first"}</button></div>`).join(""):`<div class="empty">${icon("check")}<h2>Nothing waiting to send.</h2><p>Your queue is empty. Start a request whenever you need a hand.</p>${btn("Start a request","guided")}</div>`)}
+function profile(){
+let p=state.profile;
+const er=(c,t,id)=>`<p class="err" role="alert" ${id?`id="${id}"`:""} ${c?"":"hidden"}>${t}</p>`;
+const chips=(arr,key,sel)=>`<div class="quick" role="group">${arr.map((v)=>`<button type="button" class="chipb ${sel.includes(v)?"on":""}" data-action="${key}:${v}" aria-pressed="${sel.includes(v)}">${v}</button>`).join("")}</div>`;
+const opts=(arr,v)=>arr.map((t)=>`<option ${v===t?"selected":""}>${t}</option>`).join("");
+return back()+head("FRESHCISION Connect · Provider view",p.saved?"Edit your profile.":"Set up your profile.","")+
+`<form id="profile-form" class="panel" novalidate><label class="field">Provider name<input data-pf="name" value="${esc(p.name)}" autocomplete="off"></label>${er(!p.name.trim(),"Enter your provider name.","err-name")}<label class="field">Provider type<select data-pf="type"><option value="">Choose a type</option>${opts(["Buyer","Transporter","Ice supplier","Cold storage","Processor","Cooperative"],p.type)}</select></label>${er(!p.type,"Choose your provider type.")}<div class="field">Services offered${chips(["Buy produce","Buy fish","Transport","Ice","Cold storage","Processing"],"svc",p.services)}</div>${er(!p.services.length,"Choose at least one service.")}<div class="field">Coverage area${chips(["Daet","Mercedes","Labo","Paracale","Jose Panganiban","Vinzons","Talisay","Basud","San Vicente","Santa Elena","Capalonga"],"cov",p.coverage)}</div>${er(!p.coverage.length,"Choose at least one municipality.")}<label class="field">Capacity in kg per day<input data-pf="capacity" type="number" min="0" inputmode="numeric" value="${esc(p.capacity)}"></label><label class="field">Available schedule<select data-pf="schedule"><option value="">Choose a schedule</option>${opts(["Mornings","Afternoons","Daily"],p.schedule)}</select></label><label class="field">Conditions, for example minimum 40 kg<input data-pf="conditions" value="${esc(p.conditions)}"></label><label class="field">Indicative rate (₱ per kg per day)<input data-pf="rate" type="number" min="0" step="0.5" value="${esc(p.rate)}" placeholder="[Indicative rate]"></label><label class="field">Contact number<input data-pf="contact" type="tel" value="${esc(p.contact)}"></label><p class="sm">Rates are indicative. Final terms are agreed directly with the farmer or fisherfolk member.</p><button class="btn" id="save-profile" type="submit" style="width:100%;margin-top:14px" ${profileOk()?"":"disabled"}>Save profile</button><p class="sm" id="save-hint" ${profileOk()?"hidden":""}>Save is off until name, type, one service, and one area are filled.</p></form>`}
+function freply(){
+return back()+head("Reply to your provider","Write one short answer.","Your reply goes to "+esc(providers[state.chosen].name)+".")+`<form id="freply" class="panel"><label class="field">Your reply<textarea name="text" required maxlength="600"></textarea></label><button class="btn" type="submit" style="width:100%">${state.online?"Send reply":"Save reply to queue"}</button></form>`}
+function render(){
+let page=state.page,pv=state.role==="provider";
+let nav=pv?[["home","home","Home"],["inbox","inbox","Inbox"],["queue","notebook","Outbox"],["settings","users","Account"]]:[["home","home","Home"],["requests","notebook","Requests"],["chat","chat","Chat"],["settings","users","Account"]];
+let active=pv?(page==="pdetail"?"inbox":page==="profile"?"home":page):(["guided","summary","matches","provider","explain","outcome","freply"].includes(page)?"requests":page);
+document.getElementById("app").innerHTML=`<div class="app-shell ${pv?"pv":""}"><header class="app-header"><a href="#" data-go="home" class="brand">${icon("leaf")}<span>FRESHCISION<small>${pv?"CONNECT · PROVIDER VIEW":"YOUR FIELD COMPANION"}</small></span></a><button class="vsw" data-action="switch-view" aria-label="Switch to ${pv?"farmer":"provider"} view">${pv?"Farmer view":"Provider view"}</button><button class="icon-button" data-go="queue" aria-label="Open outbox, ${state.queue.length} waiting">${icon("inbox")}${state.queue.length?`<span class="count-dot">${state.queue.length}</span>`:""}</button></header>${state.helper?'<div class="mode-banner">Helper mode · Only the beneficiary can accept.</div>':""}${!state.online?'<div class="mode-banner">Offline · Saved on device, not sent yet. Keep this page open.</div>':""}<main class="main" id="main">${({home,chat,guided,summary,matches,provider,explain,requests,inbox,pdetail,profile,freply,tips,outcome,settings,queue}[page]||home)()}</main><nav class="bottom-nav" aria-label="App navigation">${nav.map(([key,ic,label])=>`<button data-go="${key}" class="${active===key?"active":""}" ${active===key?'aria-current="page"':""}><span class="nav-icon">${icon(ic)}</span>${label}</button>`).join("")}</nav>${!pv&&page!=="chat"?`<button class="fab" data-go="chat" aria-label="Chat with the assistant">${icon("chat")}</button>`:""}</div>`;
+document.querySelector("main h1")?.setAttribute("tabindex","-1")}
+function queueItem(title,type,data){state.queue.push({title,type,data});toast("Saved on device, not sent yet. Keep this page open.")}
+function act(a){
+if(a.includes(":")){
+const i=a.indexOf(":"),k=a.slice(0,i),v=a.slice(i+1);
+if(k==="provider"||k==="explain"){state.chosen=+v;go(k);return}
+if(k==="svc"||k==="cov"){let arr=state.profile[k==="svc"?"services":"coverage"],j=arr.indexOf(v);j<0?arr.push(v):arr.splice(j,1);render();return}
+if(k==="tab"){state.tab=v;render();return}
+if(k==="popen"){state.pid=v;state.pform="";go("pdetail");return}
+if(k==="pform"){state.pform=v;render();return}
+if(k==="flush"){
+let q=state.queue[+v];
+if(!state.online||!q)return;
+if(q.type==="request")createMine();
+else if(q.type==="accept"){if(state.helper||state.role!=="farmer"){toast("Only the beneficiary can accept.");return}let m=myReq();if(providers[q.data.provider].isMe&&(!m||m.status!=="waiting")){toast("The provider has not confirmed yet.");return}doAccept(q.data.provider)}
+else if(q.type==="freply"){let m=myReq();if(m)m.reply=q.data.text}
+else if(q.type[0]==="p"){state.queue.splice(+v,1);applyP(q.type.slice(1),q.data);render();return}
+state.queue.splice(+v,1);render();toast("Sent in this sample session. No real message was sent.");return}}
+if(a==="guided-back"){state.guideStep=Math.max(0,(state.guideStep||0)-1);go("guided");return}
+if(a==="edit-profile"){go("profile");return}
+if(["home","chat","guided","summary","matches","tips","inbox","queue","outcome","freply"].includes(a)){go(a);return}
+if(a==="connection"){state.online=!state.online;render();toast(state.online?"Online in sample mode. Open the outbox to send saved items.":"Offline mode. You can still work. Saved on device · not sent yet.");return}
+if(a==="toggle-match"){state.noMatch=!state.noMatch;render()}
+if(a==="hide-me"){state.hideMe=true;render()}
+if(a==="open-provider"){state.role="provider";go(state.profile.saved?"inbox":"profile")}
+if(a==="switch-view"){state.role=state.role==="provider"?"farmer":"provider";go(state.role==="provider"&&!state.profile.saved?"profile":"home")}
+if(a==="send"){if(state.online){createMine();go("matches");toast("Request sent in this sample. No real provider was contacted.")}else{queueItem("Request · "+state.request.produce,"request");go("queue")}}
+if(a==="accept"){
+let p=providers[state.chosen],m=myReq();
+if(state.helper||state.role!=="farmer"){toast("Only the beneficiary can accept.");return}
+if(+state.request.quantity>p.capacity){toast("This quantity is above capacity.");return}
+if(p.isMe&&(!m||m.status!=="waiting")){toast("Wait for the provider to confirm first.");return}
+if(p.age>6&&!document.getElementById("stale-check")?.checked){toast("Confirm with the provider first, then tick the checkbox.");return}
+if(!state.online){queueItem("Farmer acceptance · "+p.name,"accept",{provider:state.chosen});go("queue");return}
+doAccept(state.chosen);render();toast("Accepted in this sample. Contact is now visible.")}
+if(a==="cam"){document.getElementById("chatphoto")?.click();return}
+if(a==="mic"){const C=window.SpeechRecognition||window.webkitSpeechRecognition;if(!C){toast("Voice is not supported in this browser. Please type.");return}
+let r=new C();r.lang="fil-PH";r.interimResults=false;r.onresult=(ev)=>reply(ev.results[0][0].transcript);r.onerror=()=>toast("Could not hear you. Try again.");r.start();toast("Listening… speak now.");return}
+if(a==="open-role")go(state.role==="provider"?"inbox":"home")}
+document.addEventListener("click",(e)=>{
+let el=e.target.closest("[data-go],[data-action],[data-prompt]");
+if(!el)return;
+e.preventDefault();
+if(el.dataset.go)go(el.dataset.go);
+else if(el.dataset.action)act(el.dataset.action);
+else if(el.dataset.prompt)reply(el.dataset.prompt)});
+function reply(text){
+state.messages.push({who:"You",text});
+let d=state.chatDraft,match=text.match(/(\d+(?:\.\d+)?)\s*(?:kg|kilo|kilogram)/i);
+if(match)d.quantity=match[1];
+else if(/^\d+(?:\.\d+)?$/.test(text.trim()))d.quantity=text.trim();
+for(let p of ["Tilapia","Bangus","Tuna","Pineapple","Tomato"])if(text.toLowerCase().includes(p.toLowerCase()))d.produce=p;
+for(let t of ["Daet","Mercedes","Labo","Paracale","Basud","Vinzons","Talisay","Jose Panganiban"])if(text.toLowerCase().includes(t.toLowerCase()))d.town=t;
+if(/transport|ride|sakay|hatid/i.test(text))d.need="Transport";
+else if(/buyer|bibili/i.test(text))d.need="Find a buyer";
+else if(/cold|ice|yelo|storage/i.test(text))d.need="Cold storage";
+if(/today|ngayon/i.test(text))d.time="Today";
+else if(/tomorrow|bukas/i.test(text))d.time="Tomorrow";
+else if(/morning|afternoon|am|pm/i.test(text))d.time=text;
+Object.assign(state.request,d);
+let missing=[["need","What do you need: cold storage, transport, or a buyer?"],["produce","What crop or fish do you have? Anong ani o isda?"],["quantity","Ilang kilo? How many kilograms do you have?"],["town","Which town are you in? Saang bayan ka?"],["time","When do you need help? Kailan mo kailangan?"]].find(([key])=>!d[key]);
+state.messages.push({who:"FRESHCISION",text:missing?missing[1]:"Salamat. Check the request details next. You can change anything before you send."});
+state.chatReady=!missing;render()}
+document.addEventListener("submit",(e)=>{
+e.preventDefault();
+let f=e.target,d=new FormData(f);
+if(f.id==="guided-step"){
+let i=state.guideStep||0;
+if(i<5)state.request[f.dataset.key]=d.get("answer");
+if(i===5)go("summary");else{state.guideStep=i+1;go("guided")}}
+if(f.id==="chat-form")reply(d.get("message"));
+if(f.id==="profile-form"){if(!profileOk()){render();return}state.profile.saved=true;syncMe();go("inbox");toast("Profile saved. Matching requests will appear in your inbox.")}
+if(f.id==="pform"){
+let k=f.dataset.kind,x={id:state.pid};
+if(k==="confirm"){x.ready=d.get("ready");x.rate=d.get("rate");x.note=d.get("note")}
+if(k==="decline")x.reason=d.get("reason");
+if(k==="ask"||k==="cond")x.text=d.get("text");
+if(k==="done")x.kg=d.get("kg");
+state.pform="";
+if(!state.online){queueItem("Provider "+k+" · "+x.id,"p"+k,x);go("queue")}else{applyP(k,x);render()}}
+if(f.id==="freply"){
+let t=d.get("text");
+if(!state.online){queueItem("Reply to provider","freply",{text:t});go("queue")}else{let m=myReq();if(m)m.reply=t;go("provider");toast("Reply sent.")}}
+if(f.id==="outcome-form"){state.outcome=d.get("outcome");toast("Field note saved for this session.")}});
+document.addEventListener("input",(e)=>{
+let t=e.target;
+if(t.dataset.pf){state.profile[t.dataset.pf]=t.value;
+if(t.dataset.pf==="name"){let x=document.getElementById("err-name");if(x)x.hidden=!!t.value.trim()}
+if(t.tagName==="SELECT"){render();return}
+let b=document.getElementById("save-profile"),h=document.getElementById("save-hint");if(b)b.disabled=!profileOk();if(h)h.hidden=profileOk()}
+if("hn" in t.dataset)state.helperName=t.value});
+document.addEventListener("change",(e)=>{
+let el=e.target;
+if(el.id==="chatphoto"){let f=el.files?.[0];if(!f)return;state.photoFile=f;state.photo=f.name;state.photoURL=URL.createObjectURL(f);state.messages.push({who:"You",text:"Photo added",img:state.photoURL});state.messages.push({who:"FRESHCISION",text:"Thanks. The photo goes with your request. It is not a freshness check."});render()}
+if(el.id==="helper-mode"){state.helper=el.checked;render()}
+if(el.id==="role-select"){state.role=el.value;render()}
+if(el.id==="photo"){
+state.photoFile=el.files?.[0]||null;
+state.photo=state.photoFile?.name||"";
+state.photoURL=state.photoFile?URL.createObjectURL(state.photoFile):"";
+document.getElementById("photo-status").textContent=state.photo?"Photo added: "+state.photo:"No photo added. You can continue without one."}});
+render();
+</script>
+</body>
+</html>
